@@ -1,7 +1,18 @@
 from flask import Flask, redirect, url_for, request
+from pymongo import MongoClient
 app = Flask(__name__)
 
+def get_database():
+    client = MongoClient("mongodb+srv://vivektallav:vivMongo24@17155-1project.tu4ysq1.mongodb.net/")
+    db = client['loginInfo']
+    # Retrieve a collection named "usernames from database
+    collection = db['usernames']
+    documents = collection.find({})
+    return str(list(documents))
+
 @app.route('/')
+def home():
+    return 'Connected to MongoDB!<br/>Document Info: ' + get_database()
 def index():
     return 'Index Page'
 
