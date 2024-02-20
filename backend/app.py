@@ -11,10 +11,12 @@ def get_database():
     return str(list(documents))
 
 @app.route('/')
-def home():
-    return 'Connected to MongoDB!<br/>Document Info: ' + get_database()
 def index():
     return 'Index Page'
+
+@app.route('/database')
+def home():
+    return 'Connected to MongoDB!<br/>Document Info: ' + get_database()
 
 @app.route('/admin')
 def hello_admin():
