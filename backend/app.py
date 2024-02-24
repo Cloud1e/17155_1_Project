@@ -4,9 +4,9 @@ app = Flask(__name__)
 
 def get_database():
     client = MongoClient("mongodb+srv://vivektallav:vivMongo24@17155-1project.tu4ysq1.mongodb.net/")
-    db = client['loginInfo']
+    db = client['myDatabase']
     # Retrieve a collection named "usernames from database
-    collection = db['usernames']
+    collection = db['users']
     documents = collection.find({})
     return str(list(documents))
 
