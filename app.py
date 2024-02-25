@@ -4,13 +4,17 @@ from flask_cors import CORS
 
 app = Flask(__name__, static_folder='./build', static_url_path='/')
 CORS(app)
+client = MongoClient("mongodb+srv://vivektallav:vivMongo24@17155-1project.tu4ysq1.mongodb.net/")
+db = client['myDatabase']
+
+# create collection
+users = db["user"]
+projects = db["project"]
+hwsets = db["hardware"]
 
 def get_database():
-    client = MongoClient("mongodb+srv://vivektallav:vivMongo24@17155-1project.tu4ysq1.mongodb.net/")
-    db = client['myDatabase']
     # Retrieve a collection named "usernames from database
-    collection = db['users']
-    documents = collection.find({})
+    documents = users.find({})
     return str(list(documents))
 
 @app.route('/', methods=['GET'])
