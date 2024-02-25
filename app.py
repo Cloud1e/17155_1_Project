@@ -1,6 +1,9 @@
-from flask import Flask, redirect, url_for, request
+from flask import Flask, redirect, url_for, request, send_from_directory
 from pymongo import MongoClient
-app = Flask(__name__)
+from flask_cors import CORS
+
+app = Flask(__name__, static_folder='./build', static_url_path='/')
+CORS(app)
 
 def get_database():
     client = MongoClient("mongodb+srv://vivektallav:vivMongo24@17155-1project.tu4ysq1.mongodb.net/")
@@ -10,9 +13,9 @@ def get_database():
     documents = collection.find({})
     return str(list(documents))
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def index():
-    return 'Index Page'
+    return send_from_directory(app.static_folder, 'index.html')
 
 @app.route('/database')
 def home():
