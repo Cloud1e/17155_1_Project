@@ -44,6 +44,9 @@ def createUser():
     if user_found:
         message = 'User already exists!'
         return jsonify({'message': message}), 400  
+    if json["password"].count(' ') > 0 or json["password"].count('!') > 0:
+        message = 'Invalid password!'
+        return jsonify({'message': message}), 400
     encrypted_pass = cipher.encrypt(json["password"], 1)
     user = {
         "password": encrypted_pass,
