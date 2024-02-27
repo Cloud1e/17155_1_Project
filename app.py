@@ -71,20 +71,37 @@ def createUser():
 
 @app.route("/login/", methods=["POST"])
 def login():
+    print('post request working')
     json = request.get_json()
     print(json)
     username = json['username']
     password = json['password']
     encrypted_pass = cipher.encrypt(password, 1)
+    session['username'] = username
+    session['encrypted_pass'] = encrypted_pass
+    return '1'
+
+@app.route("/loginTry/", methods=["GET"])
+def loginTry():
+    print('get request working')
+    username = session['username']
+    encrypted_pass = session['encrypted_pass']
     user_found = users.find_one({"username": username})
     if user_found is not None:
         if encrypted_pass == user_found["password"]:
+            del session['encrypted_pass']
+            session['login_success'] = True
             message = 'Login success!'
-            return jsonify({'message': message}), 200  
+            # return jsonify({'message': message}), 200
+            return success()
         else:
+            del session['username']
+            del session['encrypted_pass']
             message = 'Incorrect password!'
             return jsonify({'message': message}), 400  
     else:
+        del session['username']
+        del session['encrypted_pass']
         message = 'User does not exist!'
         return jsonify({'message': message}), 400  
 
