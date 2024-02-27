@@ -24,3 +24,5 @@ yarn-error.log*
 
 __pycache__/
 *.pyc
+
+app_secret_key.txt
