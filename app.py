@@ -22,21 +22,18 @@ def get_database():
 def index():
     return send_from_directory(app.static_folder, 'index.html')
 
-@app.route('/database')
-def home():
-    return 'Connected to MongoDB!<br/>Document Info: ' + get_database()
 
 @app.route('/admin')
 def hello_admin():
-    return 'Hello Admin'
+    return '<h1>Hello Admin</h1>Connected to MongoDB!<br/>Document Info: ' + get_database()
 
-# users
-@app.route('/user')
+# User home
+@app.route('/home')
 def hello_user():
     name = request.args.get('name')
     return 'Hello %s' % name
 
-@app.route("/user/create", methods=["POST"])
+@app.route("/createUser", methods=["POST"])
 def createUser():
     json = request.get_json()
     message = ""
@@ -55,8 +52,7 @@ def createUser():
     users.insert_one(user)
     return jsonify({'message': "User " + json["username"] + " Created!"}), 201  
 
-
-@app.route("/user/login", methods=["POST"])
+@app.route("/login/", methods=["POST"])
 def login():
     json = request.get_json()
     print(json)
@@ -75,12 +71,12 @@ def login():
         message = 'User does not exist!'
         return jsonify({'message': message}), 400  
 
-@app.route('/success/<name>')
-def success(name):
+def success():
+    name = session['username']
     if name == 'admin':
         return redirect(url_for('hello_admin'))
     else:
-        return redirect(url_for('hello_user', name = name))
+        return redirect(url_for('hello_user'))
 
 # @app.route('/login', methods = ['POST', 'GET'])
 # def login():
@@ -91,7 +87,7 @@ def success(name):
 #         user = request.args.get('nm')
 #         return redirect(url_for('success', name = user))
 
-@app.route('/projects/<project>')
+@app.route('/project_<project>')
 def project_detail(project):
     return 'Project: %s' % project
     
