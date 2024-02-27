@@ -41,7 +41,7 @@ def createUser():
     json = request.get_json()
     message = ""
     user_found = users.find_one({"username": json["username"]})
-    if user_found:
+    if json["username"] == 'admin' or user_found:
         message = 'User already exists!'
         return jsonify({'message': message}), 400  
     if json["password"].count(' ') > 0 or json["password"].count('!') > 0:
