@@ -7,7 +7,7 @@ import os.path
 
 app = Flask(__name__, static_folder='./build', static_url_path='/')
 CORS(app)
-client = MongoClient("mongodb+srv://vivektallav:vivMongo24@17155-1project.tu4ysq1.mongodb.net/")
+client = MongoClient("mongodb+srv://vivektallav:sflab17@17155-1project.tu4ysq1.mongodb.net/")
 db = client['myDatabase']
 
 # Details on the Secret Key: https://flask.palletsprojects.com/en/2.3.x/config/#SECRET_KEY
@@ -48,7 +48,7 @@ def hello_user():
     name = session['username']
     return 'Hello %s' % name
 
-@app.route("/createUser", methods=["POST"])
+@app.route("/createUser", methods=["GET", "POST"])
 def createUser():
     json = request.get_json()
     message = ""
@@ -69,7 +69,7 @@ def createUser():
     session['encrypted_pass'] = encrypted_pass
     return jsonify({'message': "User " + json["username"] + " Created!"}), 201  
 
-@app.route("/login/", methods=["POST"])
+@app.route("/login/", methods=["GET", "POST"])
 def login():
     print('post request working')
     json = request.get_json()
