@@ -2,6 +2,7 @@ from flask import Flask, redirect, url_for, jsonify, request, send_from_director
 from pymongo import MongoClient
 from flask_cors import CORS
 from service import cipher
+from classes.hardwareSet import hardwareSet
 import secrets
 import os.path
 
@@ -48,7 +49,7 @@ def hello_user():
     name = session['username']
     return 'Hello %s' % name
 
-@app.route("/createUser", methods=["GET", "POST"])
+@app.route("/createUser", methods=["POST"])
 def createUser():
     json = request.get_json()
     message = ""
@@ -69,7 +70,7 @@ def createUser():
     session['encrypted_pass'] = encrypted_pass
     return jsonify({'message': "User " + json["username"] + " Created!"}), 201  
 
-@app.route("/login/", methods=["GET", "POST"])
+@app.route("/login/", methods=["POST"])
 def login():
     print('post request working')
     json = request.get_json()
@@ -124,6 +125,166 @@ def success():
 @app.route('/project_<project>')
 def project_detail(project):
     return 'Project: %s' % project
+
+@app.route("/project/create", methods=["POST"])
+def createProject():
+    json = request.get_json()
+    projectid = json["projectid"]
+    project_found = projects.find_one({"projectid": projectid})
+    if project_found is None:
+        authusers = [i for i in json["authusers"]]
+        project = {
+            "projectname": json["projectname"],
+            "projectid": json["projectid"],
+            "description": json["description"],
+            "authusers": authusers
+        }
+        projects.insert_one(project)
+        message = "Project " + json["projectname"] + " Added With ID: " + json["projectid"] + "!"
+        return jsonify({'message': message}), 201
+    else:
+        message = "Project ID already exists"
+        return jsonify({'message': message}), 400
+
+# Determine whether the user has the permission to access the project
+@app.route("/project/get", methods=["POST"])
+def getProject():
+    json = request.get_json()
+    project_found = projects.find_one({"projectid": json["projectid"]})
+    if project_found:
+        if json["username"] in project_found["authusers"]:
+            message =  "Project Accessed!"
+            return jsonify({'message': message}), 201
+        else:
+            message =  "Access Denied!"
+            return jsonify({'message': message}), 400
+    else:
+        message =  "Project Does Not Exist!"
+        return jsonify({'message': message}), 400
+
+@app.route("/project/getByID", methods=["POST"])
+def getProjectByID():
+    json = request.get_json()
+    project_found = projects.find_one({"projectid": json["projectid"]})
+    if project_found is None:
+        return jsonify({'message': "Project Does Not Exist!"}), 400
+    else:
+        data = {
+            "projectname": project_found["projectname"],
+            "projectid": project_found["projectid"],
+            "description": project_found["description"],
+            "authusers": project_found["authusers"],
+        }
+        return jsonify(data), 201
+
+@app.route("/project/addUser", methods=["POST", "GET"])
+def joinProject():
+    json = request.get_json()
+    projectId = json["projectid"]
+    userName = json["username"]
+    project_found = projects.find_one({"projectid": projectId})
+    if project_found:
+        #if user hasn't been added already
+        if userName not in project_found["authusers"]:
+            authusers = [i for i in project_found["authusers"]]
+            authusers.append(userName)
+            result = projects.update_one({"projectid": projectId}, 
+                                         {"$set": {"authusers": authusers}})
+            message = "Successfully added " + userName + " to " + projectId + "!"
+            return jsonify({'message': message}), 201
+        else:
+            message = userName + " is already an authorized user!"
+            return jsonify({'message': message}), 400
+    else:
+        message = "Project Does Not Exist!"
+        return jsonify({'message': message}), 400
+
+@app.route("/project/removeUser", methods=["POST", "GET"])
+def leaveProject():
+    json = request.get_json()
+    projectId = json["projectid"]
+    userName = json["username"]
+    project_found = projects.find_one({"projectid": projectId})
+    if project_found:
+        # if user hasn't been added already, else has been added
+        if userName not in project_found["authusers"]:
+            message = userName + " is not an authorized user!"
+            return jsonify({'message': message}), 400
+        else:
+            authusers = [i for i in project_found["authusers"]]
+            authusers.remove(userName)
+            result = projects.update_one({"projectid": projectId}, 
+                                         {"$set": {"authusers": authusers}})
+            message = "Successfully removed " + userName + " from " + projectId + "!"
+            return jsonify({'message': message}), 201
+    else:
+        message = "Project Does Not Exist!"
+        return jsonify({'message': message}), 400
+
+# hwsets
+@app.route("/hwsets/getAvailability", methods=["POST"])
+def getHwAvailability():
+    json = request.get_json()
+    name = json["hardwarename"]
+    hw_found = hwsets.find_one({"hardwarename": name})
+    if hw_found is not None:
+        availability = hw_found["availability"]
+        return str(availability)
+    else:
+        availability = -1
+        return str(availability)
+
+@app.route("/hwsets/getCapacity", methods=["POST"])
+def getHwCapacity():
+    json = request.get_json()
+    name = json["hardwarename"]
+    hw_found = hwsets.find_one({"hardwarename": name})
+    if hw_found is not None:
+        capacity = hw_found["capacity"]
+        return str(capacity)
+    else:
+        capacity = -1
+        return str(capacity)
+
+@app.route("/hwsets/checkOut", methods=["POST"])
+def checkOut():
+    json = request.get_json()
+    name = json["hardwarename"]
+    hw_found = hwsets.find_one({"hardwarename": name})
+    if hw_found:
+        capacity = hw_found["capacity"]
+        availability = hw_found["availability"]
+        hw = hardwareSet(capacity, availability)
+        num = int(json["quantity"])
+        hw.check_out(num)
+        availability = hw.get_availability()
+        query = {"hardwarename":name}
+        newvalues = {"$set": {"availability": availability}}
+        hwsets.update_one(query, newvalues)
+        return str(availability)
+    else:
+        availability = -1
+        return str(availability)
+
+@app.route("/hwsets/checkIn", methods=["POST"])
+def checkIn():
+    json = request.get_json()
+    name = json["hardwarename"]
+    hw_found = hwsets.find_one({"hardwarename": name})
+    if hw_found:
+        capacity = hw_found["capacity"]
+        availability = hw_found["availability"]
+        hw = hardwareSet(capacity, availability)
+        num = int(json["quantity"])
+        hw.check_in(num)
+        availability = hw.get_availability()
+        query = {"hardwarename": name}
+        newvalues = {"$set": {"availability": availability}}
+        hwsets.update_one(query, newvalues)
+        return str(availability)
+    else:
+        availability = -1
+        return str(availability)
     
 if __name__ == "__main__":
     app.run(debug=True)
