@@ -43,10 +43,9 @@ def hello_admin():
     return '<h1>Hello Admin</h1>Connected to MongoDB!<br/>Document Info: ' + get_database()
 
 # User home
-@app.route('/home')
+@app.route('/home/', methods=['GET'])
 def hello_user():
-    name = session['username']
-    return 'Hello %s' % name
+    return send_from_directory(app.static_folder, 'index.html')
 
 @app.route("/createUser/", methods=["POST"])
 def createUser():
@@ -81,7 +80,7 @@ def createUserTry():
     }
     users.insert_one(user)
     # return jsonify({'message': "User " + username + " Created!"}), 201
-    return success()
+    return enter_success()
 
 @app.route("/login/", methods=["POST"])
 def login():
@@ -104,7 +103,7 @@ def loginTry():
             session['login_success'] = True
             message = 'Login success!'
             # return jsonify({'message': message}), 200
-            return success()
+            return enter_success()
         else:
             del session['username']
             del session['encrypted_pass']
@@ -116,12 +115,15 @@ def loginTry():
         message = 'User does not exist!'
         return jsonify({'message': message}), 400  
 
-def success():
-    name = session['username']
-    if name == 'admin':
+def enter_success():
+    username = session['username']
+    if username == 'admin':
         return redirect(url_for('hello_admin'))
     else:
-        return redirect(url_for('hello_user'))
+        user_found = users.find_one({"username": username})
+        session['_id'] = str(user_found['_id'])
+        message = 'Success! Enter account: ' + session['_id'] + ' with username: ' + username
+        return jsonify({'message': message}), 200
 
 @app.route('/project_<project>')
 def project_detail(project):

@@ -1,5 +1,6 @@
 // Importing React hooks for managing state within the component.
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 // Importing CSS styles for the EnterManagement component.
 // import "./EnterManagement.css";
 
@@ -14,6 +15,8 @@ const EnterManagement = () => {
   const [newPassword, setNewPassword] = useState("");
   const [createUserError, setCreateUserError] = useState("");
 
+  const navigate = useNavigate();
+
   const onSignIn = async ( username, password ) => {
     const requestOptions = {
       method: "GET"
@@ -26,11 +29,13 @@ const EnterManagement = () => {
     })
     await fetch("/loginTry/", requestOptions)
     .then(async data => {
-      console.log(data);
-      if (data.redirected) {
-        window.location.href = data.url;
+      const jsonMessage = await data.json();
+      if (jsonMessage.message.includes("Success!")) {
+        const idStartIdx = jsonMessage.message.indexOf("Enter account: ") + "Enter account: ".length;
+        const idEndIdx = jsonMessage.message.indexOf(" with username: ");
+        const id = jsonMessage.message.substring(idStartIdx, idEndIdx);
+        navigate('/home/', {state: {"id": id, "username": username}});
       } else {
-        const jsonMessage = await data.json();
         setSignInError(jsonMessage.message);
       }
     })
@@ -60,11 +65,13 @@ const EnterManagement = () => {
     })
     await fetch("/createUserTry/", requestOptions)
     .then(async data => {
-      console.log(data);
-      if (data.redirected) {
-        window.location.href = data.url;
+      const jsonMessage = await data.json();
+      if (jsonMessage.message.includes("Success!")) {
+        const idStartIdx = jsonMessage.message.indexOf("Enter account: ") + "Enter account: ".length;
+        const idEndIdx = jsonMessage.message.indexOf(" with username: ");
+        const id = jsonMessage.message.substring(idStartIdx, idEndIdx);
+        navigate('/home/', {state: {"id": id, "username": newUsername}});
       } else {
-        const jsonMessage = await data.json();
         setCreateUserError(jsonMessage.message);
       }
     })

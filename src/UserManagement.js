@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useLocation } from 'react-router-dom';
 // import './UserManagement.css'; // You can uncomment and use this if you have a CSS file.
 
 // UserManagement component for handling projects.
@@ -10,6 +11,8 @@ const UserManagement = ({
   const [projectName, setProjectName] = useState("");
   const [projectDescription, setProjectDescription] = useState("");
   const [existingProjectId, setExistingProjectId] = useState("");
+
+  const location = useLocation();
 
   // Handle create new project form submission.
   const handleCreateProjectSubmit = (event) => {
@@ -27,6 +30,8 @@ const UserManagement = ({
   return (
     <div className="user-management-container">
       {/* Use existing project form */}
+      <p>Welcome, {location.state.username}!</p>
+      <p>Your ID: {location.state.id}</p>
       <div className="use-existing-project-container">
         <form
           className="use-existing-project-form"
