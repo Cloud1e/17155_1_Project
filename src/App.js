@@ -1,13 +1,13 @@
 import React from "react";
-import LoginForm from "./LoginForm"; 
-import UserManagementForm from "./UserManagement";
-import ResourceManagementForm from "./ResourceManagement";
+import EnterManagement from "./EnterManagement";
+import UserManagement from "./UserManagement";
+import ResourceManagement from "./ResourceManagement";
 function App() {
   return (
     <div className="App">
-      {/* <LoginForm /> */}
-      {/* <UserManagementForm /> */}
-      <ResourceManagementForm />
+      <EnterManagement />
+      <UserManagement />
+      <ResourceManagement />
     </div>
   );
 }

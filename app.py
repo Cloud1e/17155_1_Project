@@ -38,7 +38,6 @@ def get_database():
 def index():
     return send_from_directory(app.static_folder, 'index.html')
 
-
 @app.route('/admin')
 def hello_admin():
     return '<h1>Hello Admin</h1>Connected to MongoDB!<br/>Document Info: ' + get_database()
@@ -49,32 +48,44 @@ def hello_user():
     name = session['username']
     return 'Hello %s' % name
 
-@app.route("/createUser", methods=["POST"])
+@app.route("/createUser/", methods=["POST"])
 def createUser():
     json = request.get_json()
-    message = ""
-    user_found = users.find_one({"username": json["username"]})
-    if json["username"] == 'admin' or user_found:
+    username = json['username']
+    password = json['password']
+    encrypted_pass = cipher.encrypt(password, 1)
+    session['username'] = username
+    session['encrypted_pass'] = encrypted_pass
+    return '1'
+
+@app.route("/createUserTry/", methods=["GET"])
+def createUserTry():
+    username = session['username']
+    encrypted_pass = session['encrypted_pass']
+    user_found = users.find_one({"username": username})
+    
+    if username == 'admin' or user_found:
+        del session['username']
+        del session['encrypted_pass']
         message = 'User already exists!'
         return jsonify({'message': message}), 400  
-    if json["password"].count(' ') > 0 or json["password"].count('!') > 0:
+    if encrypted_pass.count(' ') > 0 or encrypted_pass.count('!') > 0:
+        del session['username']
+        del session['encrypted_pass']
         message = 'Invalid password!'
         return jsonify({'message': message}), 400
-    encrypted_pass = cipher.encrypt(json["password"], 1)
+    
     user = {
         "password": encrypted_pass,
-        "username": json["username"]
+        "username": username
     }
     users.insert_one(user)
-    session['username'] = json["username"]
-    session['encrypted_pass'] = encrypted_pass
-    return jsonify({'message': "User " + json["username"] + " Created!"}), 201  
+    # return jsonify({'message': "User " + username + " Created!"}), 201
+    return success()
 
 @app.route("/login/", methods=["POST"])
 def login():
-    print('post request working')
     json = request.get_json()
-    print(json)
     username = json['username']
     password = json['password']
     encrypted_pass = cipher.encrypt(password, 1)
@@ -84,7 +95,6 @@ def login():
 
 @app.route("/loginTry/", methods=["GET"])
 def loginTry():
-    print('get request working')
     username = session['username']
     encrypted_pass = session['encrypted_pass']
     user_found = users.find_one({"username": username})
@@ -112,15 +122,6 @@ def success():
         return redirect(url_for('hello_admin'))
     else:
         return redirect(url_for('hello_user'))
-
-# @app.route('/login', methods = ['POST', 'GET'])
-# def login():
-#     if request.method == 'POST':
-#         user = request.form['nm']
-#         return redirect(url_for('success', name = user))
-#     else:
-#         user = request.args.get('nm')
-#         return redirect(url_for('success', name = user))
 
 @app.route('/project_<project>')
 def project_detail(project):
