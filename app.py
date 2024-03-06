@@ -122,8 +122,8 @@ def enter_success():
     else:
         user_found = users.find_one({"username": username})
         session['_id'] = str(user_found['_id'])
-        message = 'Success! Enter account: ' + session['_id'] + ' with username: ' + username
-        return jsonify({'message': message}), 200
+        message = 'Success!'
+        return jsonify({'message': message, 'id': session['_id'], 'username': username}), 200
 
 @app.route('/project/<projectid>', methods=['GET'])
 def project_detail(projectid):
