@@ -66,7 +66,7 @@ def createUserTry():
     message = ''
     if username == 'admin' or user_found:
         message = 'User already exists!' 
-    if encrypted_pass.count(' ') > 0 or encrypted_pass.count('!') > 0:
+    elif encrypted_pass.count(' ') > 0 or encrypted_pass.count('!') > 0:
         message = 'Invalid password!'
     if len(message) > 0:
         del session['username']
@@ -148,9 +148,9 @@ def createProjectTry():
 
     if projectname == '':
         message = 'Empty project name!'
-    if projectid == '':
+    elif projectid == '':
         message = 'Empty project ID!'
-    if description == '':
+    elif description == '':
         message = 'Empty project description!'
     if len(message) > 0:
         del session['projectname']
