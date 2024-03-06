@@ -160,7 +160,7 @@ def createProjectTry():
         del session['projectid']
         del session['description']
         del session['authusers']
-        message = 'Empty project id!'
+        message = 'Empty project ID!'
         return jsonify({'message': message}), 400
     if description == '':
         del session['projectname']
@@ -189,8 +189,16 @@ def createProjectTry():
         del session['projectname']
         del session['projectid']
         del session['description']
-        message = "Project ID already exists"
+        message = "Project ID already exists!"
         return jsonify({'message': message}), 400
+
+@app.route("/project/getAll/", methods=["GET"])
+def getAllProjects():
+    documents = projects.find({})
+    documents = list(documents)
+    for project in documents:
+        del project['_id']
+    return jsonify({'data': documents}), 200
 
 # Determine whether the user has the permission to access the project
 @app.route("/project/get", methods=["POST"])

@@ -28,13 +28,13 @@ const EnterManagement = () => {
       body: JSON.stringify({'username': username, 'password': password})
     })
     await fetch("/loginTry/", requestOptions)
-    .then(async data => {
-      const jsonMessage = await data.json();
-      if (jsonMessage.message.includes("Success!")) {
-        const id = jsonMessage.id;
+    .then(response => response.json())
+    .then(data => {
+      if (data.message.includes("Success!")) {
+        const id = data.id;
         navigate('/home/', {state: {"id": id, "username": username}});
       } else {
-        setSignInError(jsonMessage.message);
+        setSignInError(data.message);
       }
     })
   };
@@ -62,13 +62,13 @@ const EnterManagement = () => {
       body: JSON.stringify({'username': newUsername, 'password': newPassword})
     })
     await fetch("/createUserTry/", requestOptions)
-    .then(async data => {
-      const jsonMessage = await data.json();
-      if (jsonMessage.message.includes("Success!")) {
-        const id = jsonMessage.id;
+    .then(response => response.json())
+    .then(data => {
+      if (data.message.includes("Success!")) {
+        const id = data.id;
         navigate('/home/', {state: {"id": id, "username": newUsername}});
       } else {
-        setCreateUserError(jsonMessage.message);
+        setCreateUserError(data.message);
       }
     })
   };

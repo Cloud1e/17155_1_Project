@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
 // import './UserManagement.css'; // You can uncomment and use this if you have a CSS file.
 
@@ -13,6 +13,8 @@ const UserManagement = ({
   const [createProjectError, setCreateProjectError] = useState("");
 
   const [existingProjectId, setExistingProjectId] = useState("");
+
+  const [projectList, setProjectList] = useState("");
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -68,6 +70,19 @@ const UserManagement = ({
     onUseExistingProject(existingProjectId);
   };
 
+  const getAllProjects = () => {
+    const requestOptions = {
+      method: "GET"
+    };
+    fetch("/project/getAll/", requestOptions)
+    .then(response => response.json())
+    .then(data => setProjectList(data.data));
+  }
+
+  useEffect(() => {
+    getAllProjects();
+  }, []);
+
   // Render method for the user management form.
   return (
     <div className="user-management-container">
@@ -88,6 +103,7 @@ const UserManagement = ({
           />
           <button type="submit">Use Project</button>
         </form>
+        <p>Existing Projects: {JSON.stringify(projectList)}</p>
       </div>
 
       {/* Create new project form */}
