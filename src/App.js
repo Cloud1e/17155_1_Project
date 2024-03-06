@@ -9,8 +9,8 @@ function App() {
       <Routes>
         <Route path="/" element={<EnterManagement/>}></Route>
         <Route path="/home" element={ <UserManagement />}></Route>
+        <Route path="/project/:id" element={ <ResourceManagement />}></Route>
       </Routes>
-      <ResourceManagement />
     </div>
   );
 }

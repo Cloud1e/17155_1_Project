@@ -1,23 +1,65 @@
 import React, { useState } from "react";
-import { useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 // import './UserManagement.css'; // You can uncomment and use this if you have a CSS file.
 
 // UserManagement component for handling projects.
 const UserManagement = ({
-  onCreateProject,
   onUseExistingProject,
 }) => {
   // State variables for form fields.
   const [projectName, setProjectName] = useState("");
+  const [projectId, setProjectId] = useState("");
   const [projectDescription, setProjectDescription] = useState("");
+  const [createProjectError, setCreateProjectError] = useState("");
+
   const [existingProjectId, setExistingProjectId] = useState("");
 
+  const navigate = useNavigate();
   const location = useLocation();
+  const username = location.state.username;
+  const userId = location.state.id;
+
+  const onCreateProject = async (projectName, projectId, projectDescription) => {
+    const requestOptions = {
+      method: "GET"
+    }
+    await fetch("/project/create/", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      // mode: "cors",
+      body: JSON.stringify({'projectname': projectName,
+        'projectid': projectId,
+        'description': projectDescription,
+        'authusers': username})
+    })
+    await fetch("/project/createTry/", requestOptions)
+    .then(async data => {
+      const jsonMessage = await data.json();
+      if (jsonMessage.message.includes("Success!")) {
+        const projectid = jsonMessage.projectid;
+        navigate('/project/' + projectid);
+      } else {
+        setCreateProjectError(jsonMessage.message);
+      }
+    })
+  }
+
+  const createProjectErrorMessage = () => {
+    return (
+    <div
+      className="createProjectError"
+      style={{
+        display: createProjectError === "" ? 'none' : '',
+      }}>
+      <p>{createProjectError}</p>
+    </div>
+    );
+  };
 
   // Handle create new project form submission.
   const handleCreateProjectSubmit = (event) => {
     event.preventDefault();
-    onCreateProject(projectName, projectDescription);
+    onCreateProject(projectName, projectId, projectDescription);
   };
 
   // Handle use existing project form submission.
@@ -30,8 +72,8 @@ const UserManagement = ({
   return (
     <div className="user-management-container">
       {/* Use existing project form */}
-      <p>Welcome, {location.state.username}!</p>
-      <p>Your ID: {location.state.id}</p>
+      <p>Welcome, {username}!</p>
+      <p>Your ID: {userId}</p>
       <div className="use-existing-project-container">
         <form
           className="use-existing-project-form"
@@ -61,6 +103,12 @@ const UserManagement = ({
             value={projectName}
             onChange={(e) => setProjectName(e.target.value)}
           />
+          <input
+            type="text"
+            placeholder="Project ID"
+            value={projectId}
+            onChange={(e) => setProjectId(e.target.value)}
+          />
           <textarea
             placeholder="Project Description"
             value={projectDescription}
@@ -68,6 +116,9 @@ const UserManagement = ({
           />
           <button type="submit">Create Project</button>
         </form>
+        <div className="createProjectMessages">
+          {createProjectErrorMessage()}
+	      </div>
       </div>
     </div>
   );
