@@ -63,15 +63,14 @@ def createUserTry():
     encrypted_pass = session['encrypted_pass']
     user_found = users.find_one({"username": username})
     
+    message = ''
     if username == 'admin' or user_found:
-        del session['username']
-        del session['encrypted_pass']
-        message = 'User already exists!'
-        return jsonify({'message': message}), 400  
+        message = 'User already exists!' 
     if encrypted_pass.count(' ') > 0 or encrypted_pass.count('!') > 0:
+        message = 'Invalid password!'
+    if len(message) > 0:
         del session['username']
         del session['encrypted_pass']
-        message = 'Invalid password!'
         return jsonify({'message': message}), 400
     
     user = {
@@ -101,19 +100,16 @@ def loginTry():
         if encrypted_pass == user_found["password"]:
             del session['encrypted_pass']
             session['login_success'] = True
-            message = 'Login success!'
+            # message = 'Login success!'
             # return jsonify({'message': message}), 200
             return enter_success()
         else:
-            del session['username']
-            del session['encrypted_pass']
             message = 'Incorrect password!'
-            return jsonify({'message': message}), 400  
     else:
-        del session['username']
-        del session['encrypted_pass']
         message = 'User does not exist!'
-        return jsonify({'message': message}), 400  
+    del session['username']
+    del session['encrypted_pass']
+    return jsonify({'message': message}), 400
 
 def enter_success():
     username = session['username']
@@ -148,26 +144,19 @@ def createProjectTry():
     projectid = session['projectid']
     description = session['description']
     authusers = session['authusers']
+    message = ''
+
     if projectname == '':
-        del session['projectname']
-        del session['projectid']
-        del session['description']
-        del session['authusers']
         message = 'Empty project name!'
-        return jsonify({'message': message}), 400
     if projectid == '':
-        del session['projectname']
-        del session['projectid']
-        del session['description']
-        del session['authusers']
         message = 'Empty project ID!'
-        return jsonify({'message': message}), 400
     if description == '':
+        message = 'Empty project description!'
+    if len(message) > 0:
         del session['projectname']
         del session['projectid']
         del session['description']
         del session['authusers']
-        message = 'Empty project description!'
         return jsonify({'message': message}), 400
     
     project_found = projects.find_one({"projectid": projectid})
@@ -189,6 +178,7 @@ def createProjectTry():
         del session['projectname']
         del session['projectid']
         del session['description']
+        del session['authusers']
         message = "Project ID already exists!"
         return jsonify({'message': message}), 400
 
