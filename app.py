@@ -289,7 +289,7 @@ def checkIn():
         availability = -1
         return str(availability)
 
-@app.errorhandler()
+@app.errorhandler(404)
 def not_found(e):
     return
 
