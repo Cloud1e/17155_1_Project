@@ -28,4 +28,3 @@ __pycache__/
 app_secret_key.txt
 
 .pytest_cache
-.venv
