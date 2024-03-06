@@ -125,27 +125,70 @@ def enter_success():
         message = 'Success! Enter account: ' + session['_id'] + ' with username: ' + username
         return jsonify({'message': message}), 200
 
-@app.route('/project_<project>')
-def project_detail(project):
-    return 'Project: %s' % project
-
-@app.route("/project/create", methods=["POST"])
-def createProject():
-    json = request.get_json()
-    projectid = json["projectid"]
+@app.route('/project/<projectid>', methods=['GET'])
+def project_detail(projectid):
     project_found = projects.find_one({"projectid": projectid})
     if project_found is None:
-        authusers = [i for i in json["authusers"]]
+        return 'Project not found!'
+    else:
+        return send_from_directory(app.static_folder, 'index.html')
+
+@app.route("/project/create/", methods=["POST"])
+def createProject():
+    json = request.get_json()
+    session['projectname'] = json["projectname"]
+    session['projectid'] = json["projectid"]
+    session['description'] = json["description"]
+    session['authusers'] = json["authusers"]
+    return '1'
+
+@app.route("/project/createTry/", methods=["GET"])
+def createProjectTry():
+    projectname = session['projectname']
+    projectid = session['projectid']
+    description = session['description']
+    authusers = session['authusers']
+    if projectname == '':
+        del session['projectname']
+        del session['projectid']
+        del session['description']
+        del session['authusers']
+        message = 'Empty project name!'
+        return jsonify({'message': message}), 400
+    if projectid == '':
+        del session['projectname']
+        del session['projectid']
+        del session['description']
+        del session['authusers']
+        message = 'Empty project id!'
+        return jsonify({'message': message}), 400
+    if description == '':
+        del session['projectname']
+        del session['projectid']
+        del session['description']
+        del session['authusers']
+        message = 'Empty project description!'
+        return jsonify({'message': message}), 400
+    
+    project_found = projects.find_one({"projectid": projectid})
+    if project_found is None:
         project = {
-            "projectname": json["projectname"],
-            "projectid": json["projectid"],
-            "description": json["description"],
-            "authusers": authusers
+            "projectname": projectname,
+            "projectid": projectid,
+            "description": description,
+            "authusers": [authusers]
         }
         projects.insert_one(project)
-        message = "Project " + json["projectname"] + " Added With ID: " + json["projectid"] + "!"
-        return jsonify({'message': message}), 201
+        message = "Success!"
+        return jsonify({'message': message,
+                        "projectname": projectname,
+                        "projectid": projectid,
+                        "description": description,
+                        "authusers": [authusers]}), 200
     else:
+        del session['projectname']
+        del session['projectid']
+        del session['description']
         message = "Project ID already exists"
         return jsonify({'message': message}), 400
 
@@ -295,3 +338,4 @@ def not_found(e):
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True, port=os.environ.get('PORT', 80))
+    # app.run(debug=True)
