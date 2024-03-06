@@ -8,7 +8,7 @@ import os.path
 
 app = Flask(__name__, static_folder='./build', static_url_path='/')
 CORS(app)
-""" client = MongoClient("mongodb+srv://vivektallav:sflab17@17155-1project.tu4ysq1.mongodb.net/")
+client = MongoClient("mongodb+srv://vivektallav:sflab17@17155-1project.tu4ysq1.mongodb.net/")
 db = client['myDatabase']
 
 # Details on the Secret Key: https://flask.palletsprojects.com/en/2.3.x/config/#SECRET_KEY
@@ -32,13 +32,13 @@ hwsets = db["hardware"]
 def get_database():
     # Retrieve a collection named "usernames from database
     documents = users.find({})
-    return str(list(documents)) """
+    return str(list(documents))
 
 @app.route('/', methods=['GET'])
 def index():
     return send_from_directory(app.static_folder, 'index.html')
 
-""" @app.route('/admin')
+@app.route('/admin')
 def hello_admin():
     return '<h1>Hello Admin</h1>Connected to MongoDB!<br/>Document Info: ' + get_database()
 
@@ -287,7 +287,7 @@ def checkIn():
         return str(availability)
     else:
         availability = -1
-        return str(availability) """
+        return str(availability)
 
 if __name__ == "__main__":
     app.run(debug=True)
