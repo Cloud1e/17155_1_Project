@@ -31,9 +31,7 @@ const EnterManagement = () => {
     .then(async data => {
       const jsonMessage = await data.json();
       if (jsonMessage.message.includes("Success!")) {
-        const idStartIdx = jsonMessage.message.indexOf("Enter account: ") + "Enter account: ".length;
-        const idEndIdx = jsonMessage.message.indexOf(" with username: ");
-        const id = jsonMessage.message.substring(idStartIdx, idEndIdx);
+        const id = jsonMessage.id;
         navigate('/home/', {state: {"id": id, "username": username}});
       } else {
         setSignInError(jsonMessage.message);
