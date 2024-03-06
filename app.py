@@ -289,5 +289,9 @@ def checkIn():
         availability = -1
         return str(availability)
 
+@app.errorhandler(404)
+def not_found(e):
+    return
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=True, port=os.environ.get('PORT', 80))
