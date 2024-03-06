@@ -288,6 +288,12 @@ def checkIn():
     else:
         availability = -1
         return str(availability)
+
+@app.errorhandler()
+def not_found(e):
+    return
+
+send_from_directory(app.static_folder, 'index.html')
     
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=os.environ.get('PORT', 80))
