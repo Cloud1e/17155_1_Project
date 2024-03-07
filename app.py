@@ -73,7 +73,6 @@ def createUserTry():
     if encrypted_pass.count(' ') > 0 or encrypted_pass.count('!') > 0:
         message += 'Invalid password! '
     if len(message) > 0:
-        del session['username']
         del session['encrypted_pass']
         return jsonify({'message': message}), 400
     
@@ -111,7 +110,6 @@ def loginTry():
             message = 'Incorrect password!'
     else:
         message = 'User does not exist!'
-    del session['username']
     del session['encrypted_pass']
     return jsonify({'message': message}), 400
 
@@ -160,10 +158,6 @@ def createProjectTry():
     if description == '':
         message += 'Empty project description! '
     if len(message) > 0:
-        del session['projectname']
-        del session['projectid']
-        del session['description']
-        del session['authusers']
         return jsonify({'message': message}), 400
     
     project = {
@@ -200,14 +194,10 @@ def getProjectTry():
     projectid = session['projectid']
     username = session['username']
     project_found = projects.find_one({"projectid": projectid})
-    message = ''
     if project_found is None:
-        message = "Project Does Not Exist!"
+        return jsonify({'message': "Project Does Not Exist!"}), 400
     elif username not in project_found["authusers"]:
-        message =  "Access Denied!"
-    if len(message) > 0:
-        del session['projectid']
-        return jsonify({'message': message}), 400
+        return jsonify({'message': "Access Denied!"}), 400
     
     data = {
         "message": 'Success!',
@@ -218,27 +208,34 @@ def getProjectTry():
     }
     return jsonify(data), 200
 
-@app.route("/project/addUser", methods=["POST", "GET"])
+@app.route("/project/addUser/", methods=["POST"])
 def joinProject():
     json = request.get_json()
-    projectId = json["projectid"]
-    userName = json["username"]
+    session['projectid'] = json["projectid"]
+    session['addUserName'] = json["addUsername"]
+    return '1'
+
+@app.route("/project/addUserTry/", methods=["GET"])
+def joinProjectTry():
+    projectId = session['projectid']
+    add_username = session['addUserName']
     project_found = projects.find_one({"projectid": projectId})
-    if project_found:
+    user_found = users.find_one({"username": add_username})
+    if user_found:
         #if user hasn't been added already
-        if userName not in project_found["authusers"]:
+        if add_username not in project_found["authusers"]:
             authusers = [i for i in project_found["authusers"]]
-            authusers.append(userName)
+            authusers.append(add_username)
             result = projects.update_one({"projectid": projectId}, 
                                          {"$set": {"authusers": authusers}})
-            message = "Successfully added " + userName + " to " + projectId + "!"
-            return jsonify({'message': message}), 201
+            message = "Successfully added " + add_username + " to " + projectId + "!"
+            return jsonify({'success': "True", 'message': message}), 201
         else:
-            message = userName + " is already an authorized user!"
-            return jsonify({'message': message}), 400
+            message = add_username + " is already an authorized user!"
+            return jsonify({'success': "False", 'message': message}), 400
     else:
-        message = "Project Does Not Exist!"
-        return jsonify({'message': message}), 400
+        message = "User Does Not Exist!"
+        return jsonify({'success': "False", 'message': message}), 400
 
 @app.route("/project/removeUser", methods=["POST", "GET"])
 def leaveProject():

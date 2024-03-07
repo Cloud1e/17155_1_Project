@@ -38,7 +38,7 @@ const UserManagement = () => {
     .then(data =>  {
       if (data.message.includes("Success!")) {
         const projectid = data.projectid;
-        navigate('/project/' + projectid, {state: {"username": username}});
+        navigate('/project/' + projectid, {state: {"username": username, "projectid": projectid}});
       } else {
         setCreateProjectError(data.message);
       }
@@ -71,7 +71,7 @@ const UserManagement = () => {
     .then(response => response.json())
     .then(data =>  {
       if (data.message.includes("Success!")) {
-        navigate('/project/' + existingProjectId, {state: {"username": username}});
+        navigate('/project/' + existingProjectId, {state: {"username": username, "projectid": existingProjectId}});
       } else {
         setUseExistingProjectError(data.message);
       }
