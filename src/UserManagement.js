@@ -3,9 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 // import './UserManagement.css'; // You can uncomment and use this if you have a CSS file.
 
 // UserManagement component for handling projects.
-const UserManagement = ({
-  onUseExistingProject,
-}) => {
+const UserManagement = () => {
   // State variables for form fields.
   const [projectName, setProjectName] = useState("");
   const [projectId, setProjectId] = useState("");
@@ -13,6 +11,7 @@ const UserManagement = ({
   const [createProjectError, setCreateProjectError] = useState("");
 
   const [existingProjectId, setExistingProjectId] = useState("");
+  const [useExistingProjectError, setUseExistingProjectError] = useState("");
 
   const [projectList, setProjectList] = useState("");
 
@@ -35,16 +34,16 @@ const UserManagement = ({
         'authusers': username})
     })
     await fetch("/project/createTry/", requestOptions)
-    .then(async data => {
-      const jsonMessage = await data.json();
-      if (jsonMessage.message.includes("Success!")) {
-        const projectid = jsonMessage.projectid;
-        navigate('/project/' + projectid);
+    .then(response => response.json())
+    .then(data =>  {
+      if (data.message.includes("Success!")) {
+        const projectid = data.projectid;
+        navigate('/project/' + projectid, {state: {"username": username}});
       } else {
-        setCreateProjectError(jsonMessage.message);
+        setCreateProjectError(data.message);
       }
     })
-  }
+  };
 
   const createProjectErrorMessage = () => {
     return (
@@ -54,6 +53,39 @@ const UserManagement = ({
         display: createProjectError === "" ? 'none' : '',
       }}>
       <p>{createProjectError}</p>
+    </div>
+    );
+  };
+
+  const onUseExistingProject = async (existingProjectId) => {
+    const requestOptions = {
+      method: "GET"
+    }
+    await fetch("/project/get/", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      // mode: "cors",
+      body: JSON.stringify({'projectid': existingProjectId})
+    })
+    await fetch("/project/getTry/", requestOptions)
+    .then(response => response.json())
+    .then(data =>  {
+      if (data.message.includes("Success!")) {
+        navigate('/project/' + existingProjectId, {state: {"username": username}});
+      } else {
+        setUseExistingProjectError(data.message);
+      }
+    })
+  };
+
+  const useExistingProjectErrorMessage = () => {
+    return (
+    <div
+      className="useExistingProjectError"
+      style={{
+        display: useExistingProjectError === "" ? 'none' : '',
+      }}>
+      <p>{useExistingProjectError}</p>
     </div>
     );
   };
@@ -103,6 +135,9 @@ const UserManagement = ({
           />
           <button type="submit">Use Project</button>
         </form>
+        <div className="useExistingProjectMessages">
+          {useExistingProjectErrorMessage()}
+	      </div>
         <p>Existing Projects: {JSON.stringify(projectList)}</p>
       </div>
 
