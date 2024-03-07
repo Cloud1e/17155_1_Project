@@ -64,10 +64,14 @@ def createUserTry():
     user_found = users.find_one({"username": username})
     
     message = ''
-    if username == 'admin' or user_found:
-        message = 'User already exists!' 
+    if username == '':
+        message += 'Empty username! '
+    elif username == 'admin' or user_found:
+        message += 'User already exists! '
+    elif encrypted_pass == '':
+        message += 'Empty password! '
     elif encrypted_pass.count(' ') > 0 or encrypted_pass.count('!') > 0:
-        message = 'Invalid password!'
+        message += 'Invalid password! '
     if len(message) > 0:
         del session['username']
         del session['encrypted_pass']
@@ -145,13 +149,16 @@ def createProjectTry():
     description = session['description']
     authusers = session['authusers']
     message = ''
+    project_found = projects.find_one({"projectid": projectid})
 
     if projectname == '':
-        message = 'Empty project name!'
+        message += 'Empty project name! '
     elif projectid == '':
-        message = 'Empty project ID!'
+        message += 'Empty project ID! '
+    elif project_found:
+        message += 'Project ID already exists! '
     elif description == '':
-        message = 'Empty project description!'
+        message += 'Empty project description! '
     if len(message) > 0:
         del session['projectname']
         del session['projectid']
@@ -159,28 +166,19 @@ def createProjectTry():
         del session['authusers']
         return jsonify({'message': message}), 400
     
-    project_found = projects.find_one({"projectid": projectid})
-    if project_found is None:
-        project = {
-            "projectname": projectname,
-            "projectid": projectid,
-            "description": description,
-            "authusers": [authusers]
-        }
-        projects.insert_one(project)
-        message = "Success!"
-        return jsonify({'message': message,
-                        "projectname": projectname,
-                        "projectid": projectid,
-                        "description": description,
-                        "authusers": [authusers]}), 200
-    else:
-        del session['projectname']
-        del session['projectid']
-        del session['description']
-        del session['authusers']
-        message = "Project ID already exists!"
-        return jsonify({'message': message}), 400
+    project = {
+        "projectname": projectname,
+        "projectid": projectid,
+        "description": description,
+        "authusers": [authusers]
+    }
+    projects.insert_one(project)
+    message = "Success!"
+    return jsonify({'message': message,
+                    "projectname": projectname,
+                    "projectid": projectid,
+                    "description": description,
+                    "authusers": [authusers]}), 200
 
 @app.route("/project/getAll/", methods=["GET"])
 def getAllProjects():
