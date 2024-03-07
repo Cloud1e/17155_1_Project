@@ -83,7 +83,7 @@ def createUserTry():
     }
     users.insert_one(user)
     # return jsonify({'message': "User " + username + " Created!"}), 201
-    return enter_success()
+    return enter_success(201)
 
 @app.route("/login/", methods=["POST"])
 def login():
@@ -106,7 +106,7 @@ def loginTry():
             session['login_success'] = True
             # message = 'Login success!'
             # return jsonify({'message': message}), 200
-            return enter_success()
+            return enter_success(200)
         else:
             message = 'Incorrect password!'
     else:
@@ -115,7 +115,7 @@ def loginTry():
     del session['encrypted_pass']
     return jsonify({'message': message}), 400
 
-def enter_success():
+def enter_success(code):
     username = session['username']
     if username == 'admin':
         return redirect(url_for('hello_admin'))
@@ -123,7 +123,7 @@ def enter_success():
         user_found = users.find_one({"username": username})
         session['_id'] = str(user_found['_id'])
         message = 'Success!'
-        return jsonify({'message': message, 'id': session['_id'], 'username': username}), 200
+        return jsonify({'message': message, 'id': session['_id'], 'username': username}), code
 
 @app.route('/project/<projectid>', methods=['GET'])
 def project_detail(projectid):
@@ -178,7 +178,7 @@ def createProjectTry():
                     "projectname": projectname,
                     "projectid": projectid,
                     "description": description,
-                    "authusers": [authusers]}), 200
+                    "authusers": [authusers]}), 201
 
 @app.route("/project/getAll/", methods=["GET"])
 def getAllProjects():
@@ -189,35 +189,34 @@ def getAllProjects():
     return jsonify({'data': documents}), 200
 
 # Determine whether the user has the permission to access the project
-@app.route("/project/get", methods=["POST"])
+@app.route("/project/get/", methods=["POST"])
 def getProject():
     json = request.get_json()
-    project_found = projects.find_one({"projectid": json["projectid"]})
-    if project_found:
-        if json["username"] in project_found["authusers"]:
-            message =  "Project Accessed!"
-            return jsonify({'message': message}), 201
-        else:
-            message =  "Access Denied!"
-            return jsonify({'message': message}), 400
-    else:
-        message =  "Project Does Not Exist!"
-        return jsonify({'message': message}), 400
+    session['projectid'] = json["projectid"]
+    return '1'
 
-@app.route("/project/getByID", methods=["POST"])
-def getProjectByID():
-    json = request.get_json()
-    project_found = projects.find_one({"projectid": json["projectid"]})
+@app.route("/project/getTry/", methods=["GET"])
+def getProjectTry():
+    projectid = session['projectid']
+    username = session['username']
+    project_found = projects.find_one({"projectid": projectid})
+    message = ''
     if project_found is None:
-        return jsonify({'message': "Project Does Not Exist!"}), 400
-    else:
-        data = {
-            "projectname": project_found["projectname"],
-            "projectid": project_found["projectid"],
-            "description": project_found["description"],
-            "authusers": project_found["authusers"],
-        }
-        return jsonify(data), 201
+        message = "Project Does Not Exist!"
+    elif username not in project_found["authusers"]:
+        message =  "Access Denied!"
+    if len(message) > 0:
+        del session['projectid']
+        return jsonify({'message': message}), 400
+    
+    data = {
+        "message": 'Success!',
+        "projectname": project_found["projectname"],
+        "projectid": project_found["projectid"],
+        "description": project_found["description"],
+        "authusers": project_found["authusers"],
+    }
+    return jsonify(data), 200
 
 @app.route("/project/addUser", methods=["POST", "GET"])
 def joinProject():
