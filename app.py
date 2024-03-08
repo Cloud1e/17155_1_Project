@@ -208,6 +208,25 @@ def getProjectTry():
     }
     return jsonify(data), 200
 
+@app.route("/project/getInfo/", methods=["POST"])
+def getProjectInfo():
+    json = request.get_json()
+    session['projectid'] = json["projectid"]
+    return '1'
+
+@app.route("/project/getInfoTry/", methods=["GET"])
+def getProjectInfoTry():
+    projectid = session['projectid']
+    project_found = projects.find_one({"projectid": projectid})
+    
+    data = {
+        "projectname": project_found["projectname"],
+        "projectid": project_found["projectid"],
+        "description": project_found["description"],
+        "authusers": project_found["authusers"],
+    }
+    return jsonify(data), 200
+
 @app.route("/project/addUser/", methods=["POST"])
 def joinProject():
     json = request.get_json()
@@ -261,9 +280,9 @@ def leaveProjectTry():
             message = "You cannot remove any user when the project has only one authorized user! You need to delete the project in the home page!"
             return jsonify({'success': "False", 'message': message}), 400
         else:
-            message = "Double check: Do you want to remove " + remove_username + "?"
+            message = "Double check: Do you want to remove " + remove_username + "? Please select from the buttons below \"Remove User From Project.\""
             if remove_username == removed_by:
-                message += " CAUTION: " + remove_username + " is yourself! You will be navigate to the home page if yourself is successfully removed."
+                message += " CAUTION: " + remove_username + " is yourself! You will be navigated to the home page if yourself is successfully removed."
             return jsonify({'success': "Pending", 'message': message}), 200
     else:
         message = "User Does Not Exist!"
@@ -291,29 +310,37 @@ def leaveProjectFinalTry():
 
 
 # hwsets
-@app.route("/hwsets/getAvailability", methods=["POST"])
-def getHwAvailability():
-    json = request.get_json()
-    name = json["hardwarename"]
-    hw_found = hwsets.find_one({"hardwarename": name})
-    if hw_found is not None:
-        availability = hw_found["availability"]
-        return str(availability)
-    else:
-        availability = -1
-        return str(availability)
+# @app.route("/hwsets/getAvailability", methods=["POST"])
+# def getHwAvailability():
+#     json = request.get_json()
+#     name = json["hardwarename"]
+#     hw_found = hwsets.find_one({"hardwarename": name})
+#     if hw_found is not None:
+#         availability = hw_found["availability"]
+#         return str(availability)
+#     else:
+#         availability = -1
+#         return str(availability)
 
-@app.route("/hwsets/getCapacity", methods=["POST"])
-def getHwCapacity():
-    json = request.get_json()
-    name = json["hardwarename"]
-    hw_found = hwsets.find_one({"hardwarename": name})
-    if hw_found is not None:
-        capacity = hw_found["capacity"]
-        return str(capacity)
-    else:
-        capacity = -1
-        return str(capacity)
+# @app.route("/hwsets/getCapacity", methods=["POST"])
+# def getHwCapacity():
+#     json = request.get_json()
+#     name = json["hardwarename"]
+#     hw_found = hwsets.find_one({"hardwarename": name})
+#     if hw_found is not None:
+#         capacity = hw_found["capacity"]
+#         return str(capacity)
+#     else:
+#         capacity = -1
+#         return str(capacity)
+
+@app.route("/hwsets/getAll/", methods=["GET"])
+def getAllHw():
+    documents = hwsets.find({})
+    documents = list(documents)
+    for hwset in documents:
+        del hwset['_id']
+    return jsonify({'data': documents}), 200
 
 @app.route("/hwsets/checkOut", methods=["POST"])
 def checkOut():

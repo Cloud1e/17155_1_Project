@@ -8,10 +8,8 @@ const UserManagement = () => {
   const [projectName, setProjectName] = useState("");
   const [projectId, setProjectId] = useState("");
   const [projectDescription, setProjectDescription] = useState("");
-  const [createProjectError, setCreateProjectError] = useState("");
 
   const [existingProjectId, setExistingProjectId] = useState("");
-  const [useExistingProjectError, setUseExistingProjectError] = useState("");
 
   const [projectList, setProjectList] = useState("");
 
@@ -40,21 +38,9 @@ const UserManagement = () => {
         const projectid = data.projectid;
         navigate('/project/' + projectid, {state: {"id": userId, "username": username, "projectid": projectid}});
       } else {
-        setCreateProjectError(data.message);
+        alert(data.message);
       }
     })
-  };
-
-  const createProjectErrorMessage = () => {
-    return (
-    <div
-      className="createProjectError"
-      style={{
-        display: createProjectError === "" ? 'none' : '',
-      }}>
-      <p>{createProjectError}</p>
-    </div>
-    );
   };
 
   const onUseExistingProject = async (existingProjectId) => {
@@ -73,21 +59,9 @@ const UserManagement = () => {
       if (data.message.includes("Success!")) {
         navigate('/project/' + existingProjectId, {state: {"id": userId, "username": username, "projectid": existingProjectId}});
       } else {
-        setUseExistingProjectError(data.message);
+        alert(data.message);
       }
     })
-  };
-
-  const useExistingProjectErrorMessage = () => {
-    return (
-    <div
-      className="useExistingProjectError"
-      style={{
-        display: useExistingProjectError === "" ? 'none' : '',
-      }}>
-      <p>{useExistingProjectError}</p>
-    </div>
-    );
   };
 
   // Handle create new project form submission.
@@ -119,7 +93,7 @@ const UserManagement = () => {
   return (
     <div className="user-management-container">
       {/* Use existing project form */}
-      <p>Welcome, {username}!</p>
+      <h1>Welcome, {username}!</h1>
       <p>Your ID: {userId}</p>
       <div className="use-existing-project-container">
         <form
@@ -135,9 +109,6 @@ const UserManagement = () => {
           />
           <button type="submit">Use Project</button>
         </form>
-        <div className="useExistingProjectMessages">
-          {useExistingProjectErrorMessage()}
-	      </div>
         <p>Existing Projects: {JSON.stringify(projectList)}</p>
       </div>
 
@@ -167,9 +138,6 @@ const UserManagement = () => {
           />
           <button type="submit">Create Project</button>
         </form>
-        <div className="createProjectMessages">
-          {createProjectErrorMessage()}
-	      </div>
       </div>
     </div>
   );
