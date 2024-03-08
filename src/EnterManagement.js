@@ -9,11 +9,9 @@ const EnterManagement = () => {
   // State variables for username and password.
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [signInError, setSignInError] = useState("");
 
   const [newUsername, setNewUsername] = useState("");
   const [newPassword, setNewPassword] = useState("");
-  const [createUserError, setCreateUserError] = useState("");
 
   const navigate = useNavigate();
 
@@ -34,21 +32,9 @@ const EnterManagement = () => {
         const id = data.id;
         navigate('/home/', {state: {"id": id, "username": username}});
       } else {
-        setSignInError(data.message);
+        alert(data.message);
       }
     })
-  };
-
-  const signInErrorMessage = () => {
-    return (
-    <div
-      className="signInError"
-      style={{
-        display: signInError === "" ? 'none' : '',
-      }}>
-      <p>{signInError}</p>
-    </div>
-    );
   };
 
   const onCreateUser = async ( newUsername, newPassword ) => {
@@ -68,21 +54,9 @@ const EnterManagement = () => {
         const id = data.id;
         navigate('/home/', {state: {"id": id, "username": newUsername}});
       } else {
-        setCreateUserError(data.message);
+        alert(data.message);
       }
     })
-  };
-
-  const createUserErrorMessage = () => {
-    return (
-    <div
-      className="createUserError"
-      style={{
-        display: createUserError === "" ? 'none' : '',
-      }}>
-      <p>{createUserError}</p>
-    </div>
-    );
   };
 
   // Handle sign-in form submission.
@@ -118,9 +92,6 @@ const EnterManagement = () => {
           />
           <button type="submit">Sign In</button>
         </form>
-        <div className="signInMessages">
-          {signInErrorMessage()}
-	      </div>
       </div>
 
       {/* Create user form */}
@@ -141,9 +112,6 @@ const EnterManagement = () => {
           />
           <button type="submit">Create User</button>
         </form>
-        <div className="createUserMessages">
-          {createUserErrorMessage()}
-	      </div>
       </div>
     </div>
   );
