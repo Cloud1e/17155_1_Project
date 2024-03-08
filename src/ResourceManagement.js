@@ -11,10 +11,16 @@ const ResourceManagement = () => {
   const [resources, setResources] = useState(initialResources);
   const [addUsername, setAddUsername] = useState("");
   const [addUsernameMessage, setAddUsernameMessage] = useState("");
+  const [addUsernameSuccess, setAddUsernameSuccess] = useState("");
+
+  const [removeUsername, setRemoveUsername] = useState("");
+  const [removeUsernameMessage, setRemoveUsernameMessage] = useState("");
+  const [removeUsernameSuccess, setRemoveUsernameSuccess] = useState("");
 
   const navigate = useNavigate();
   const location = useLocation();
   const username = location.state.username;
+  const userId = location.state.id;
   const projectid = location.state.projectid;
 
   // Update the request amount in the state
@@ -82,6 +88,7 @@ const ResourceManagement = () => {
     await fetch("/project/addUserTry/", requestOptions)
     .then(response => response.json())
     .then(data => {
+      setAddUsernameSuccess(data.success);
       setAddUsernameMessage(data.message);
     })
   };
@@ -98,10 +105,89 @@ const ResourceManagement = () => {
     );
   };
 
+  const onRemoveUserFromProject = async ( removeUsername ) => {
+    const requestOptions = {
+      method: "GET"
+    }
+    await fetch("/project/removeUser/", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      // mode: "cors",
+      body: JSON.stringify({'removeUsername': removeUsername, 'projectid': projectid, 'removedBy': username})
+    })
+    await fetch("/project/removeUserTry/", requestOptions)
+    .then(response => response.json())
+    .then(data => {
+      setRemoveUsernameSuccess(data.success);
+      setRemoveUsernameMessage(data.message);
+    })
+  };
+
+  const onRemoveUserFromProjectFinal = async ( removeUsername, choice ) => {
+    if (choice === 'Yes') {
+      const requestOptions = {
+        method: "GET"
+      }
+      await fetch("/project/removeUserFinal/", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        // mode: "cors",
+        body: JSON.stringify({'removeUsername': removeUsername, 'projectid': projectid})
+      })
+      await fetch("/project/removeUserFinalTry/", requestOptions)
+      .then(response => response.json())
+      .then(data => {
+        setRemoveUsernameSuccess(data.success);
+        setRemoveUsernameMessage(data.message);
+        if (removeUsername === username) {
+          navigate('/home/', {state: {"id": userId, "username": username}});
+        }
+      })
+    } else if (choice === 'No') {
+      setRemoveUsernameSuccess('False');
+      setRemoveUsernameMessage('');
+    }
+  };
+
+  const removeUserFromProjectMessage = () => {
+    return (
+    <div
+      className="removeUsernameMessage"
+      style={{
+        display: removeUsernameMessage === "" ? 'none' : '',
+      }}>
+      <p>{removeUsernameMessage}</p>
+      <form
+        style={{
+          display: removeUsernameSuccess === "Pending" ? '' : 'none',
+        }}
+        className="remove-user-from-project-final-form"
+        onSubmit={handleRemoveUserFromProjectFinalSubmit}
+      >
+        <button type="submit">Yes</button>
+        <button type="submit">No</button>
+      </form>
+    </div>
+    );
+  };
+
   // Handle adding user to project
   const handleAddUserToProjectSubmit = (event) => {
     event.preventDefault();
     onAddUserToProject(addUsername);
+  };
+
+  // Handle removing user from project (first check)
+  const handleRemoveUserFromProjectSubmit = (event) => {
+    event.preventDefault();
+    onRemoveUserFromProject(removeUsername);
+  };
+
+  // Handle removing user from project (double check)
+  const handleRemoveUserFromProjectFinalSubmit = (event) => {
+    event.preventDefault();
+    const choice = event.nativeEvent.submitter.textContent;
+    onRemoveUserFromProjectFinal(removeUsername, choice);
   };
 
   return (
@@ -146,6 +232,27 @@ const ResourceManagement = () => {
         </form>
         <div className="addUserToProjectMessages">
           {addUserToProjectMessage()}
+	      </div>
+      </div>
+      <div className="remove-user-from-project-container">
+        <h2>Remove User From Project</h2>
+        <form
+          className="remove-user-from-project-form"
+          onSubmit={handleRemoveUserFromProjectSubmit}
+          style={{
+            display: removeUsernameSuccess === "Pending" ? 'none' : '',
+          }}
+        >
+          <input
+            type="text"
+            placeholder="Username to remove"
+            value={removeUsername}
+            onChange={(e) => setRemoveUsername(e.target.value)}
+          />
+          <button type="submit" id="remove-user-from-project-button">Remove</button>
+        </form>
+        <div className="removeUserFromProjectMessages">
+          {removeUserFromProjectMessage()}
 	      </div>
       </div>
     </div>
