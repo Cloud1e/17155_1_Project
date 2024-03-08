@@ -237,27 +237,58 @@ def joinProjectTry():
         message = "User Does Not Exist!"
         return jsonify({'success': "False", 'message': message}), 400
 
-@app.route("/project/removeUser", methods=["POST", "GET"])
+@app.route("/project/removeUser/", methods=["POST"])
 def leaveProject():
     json = request.get_json()
-    projectId = json["projectid"]
-    userName = json["username"]
+    session['projectid'] = json["projectid"]
+    session['removeUserName'] = json["removeUsername"]
+    session['removedBy'] = json["removedBy"]
+    return '1'
+
+@app.route("/project/removeUserTry/", methods=["GET"])
+def leaveProjectTry():
+    projectId = session['projectid']
+    remove_username = session['removeUserName']
+    removed_by = session['removedBy']
     project_found = projects.find_one({"projectid": projectId})
-    if project_found:
+    user_found = users.find_one({"username": remove_username})
+    if user_found:
         # if user hasn't been added already, else has been added
-        if userName not in project_found["authusers"]:
-            message = userName + " is not an authorized user!"
-            return jsonify({'message': message}), 400
+        if remove_username not in project_found["authusers"]:
+            message = remove_username + " is not an authorized user!"
+            return jsonify({'success': "False", 'message': message}), 400
+        if len(project_found["authusers"]) == 1:
+            message = "You cannot remove any user when the project has only one authorized user! You need to delete the project in the home page!"
+            return jsonify({'success': "False", 'message': message}), 400
         else:
-            authusers = [i for i in project_found["authusers"]]
-            authusers.remove(userName)
-            result = projects.update_one({"projectid": projectId}, 
-                                         {"$set": {"authusers": authusers}})
-            message = "Successfully removed " + userName + " from " + projectId + "!"
-            return jsonify({'message': message}), 201
+            message = "Double check: Do you want to remove " + remove_username + "?"
+            if remove_username == removed_by:
+                message += " CAUTION: " + remove_username + " is yourself! You will be navigate to the home page if yourself is successfully removed."
+            return jsonify({'success': "Pending", 'message': message}), 200
     else:
-        message = "Project Does Not Exist!"
-        return jsonify({'message': message}), 400
+        message = "User Does Not Exist!"
+        return jsonify({'success': "False", 'message': message}), 400
+    
+@app.route("/project/removeUserFinal/", methods=["POST"])
+def leaveProjectFinal():
+    json = request.get_json()
+    session['projectid'] = json["projectid"]
+    session['removeUserName'] = json["removeUsername"]
+    return '1'
+
+@app.route("/project/removeUserFinalTry/", methods=["GET"])
+def leaveProjectFinalTry():
+    projectId = session['projectid']
+    remove_username = session['removeUserName']
+    project_found = projects.find_one({"projectid": projectId})
+    
+    authusers = [i for i in project_found["authusers"]]
+    authusers.remove(remove_username)
+    result = projects.update_one({"projectid": projectId}, 
+                                    {"$set": {"authusers": authusers}})
+    message = "Successfully removed " + remove_username + " from " + projectId + "!"
+    return jsonify({'removed': remove_username, 'message': message}), 201
+
 
 # hwsets
 @app.route("/hwsets/getAvailability", methods=["POST"])
