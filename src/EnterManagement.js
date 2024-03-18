@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 // Importing CSS styles for the EnterManagement component.
-// import "./EnterManagement.css";
+import "./EnterManagement.css";
 
 // EnterManagement component where users can sign in & sign up.
 const EnterManagement = () => {

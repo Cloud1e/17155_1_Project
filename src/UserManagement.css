@@ -1,0 +1,90 @@
+/* Container for the user management section */
+.user-management-container {
+  padding: 20px;
+  background-color: #f0f2f5; /* Light grey background for contrast */
+}
+
+/* Use existing project and create new project containers */
+.use-existing-project-container,
+.create-project-container {
+  margin-top: 20px;
+}
+
+/* Form styles for both creating and using existing projects */
+.use-existing-project-form,
+.create-project-form {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.use-existing-project-form h2,
+.create-project-form h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.use-existing-project-form input,
+.create-project-form input,
+.create-project-form textarea {
+  margin-bottom: 15px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.create-project-form textarea {
+  height: 100px; /* Larger height for description input */
+  resize: vertical; /* Allows resizing only vertically */
+}
+
+.use-existing-project-form button,
+.create-project-form button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.use-existing-project-form button:hover,
+.create-project-form button:hover {
+  background-color: #0056b3;
+}
+
+/* Existing Projects List Styles */
+.existing-projects-list {
+  padding: 10px;
+  background-color: #e9ecef; /* Light grey background for the list */
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+/* Individual Project Item Styles */
+.project-item {
+  background-color: white;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Project Name Styling */
+.project-name {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+/* Project ID and Description Styling */
+.project-id,
+.project-description {
+  color: #555;
+  font-size: 0.9em;
+  margin-bottom: 2px;
+}

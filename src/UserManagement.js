@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
-// import './UserManagement.css'; // You can uncomment and use this if you have a CSS file.
+import './UserManagement.css'; // You can uncomment and use this if you have a CSS file.
 
 // UserManagement component for handling projects.
 const UserManagement = () => {
@@ -109,7 +109,19 @@ const UserManagement = () => {
           />
           <button type="submit">Use Project</button>
         </form>
-        <p>Existing Projects: {JSON.stringify(projectList)}</p>
+        {/* <p>Existing Projects: {JSON.stringify(projectList)}</p> */}
+      </div>
+      
+      {/* Render each project as a styled component */}
+      <div className="existing-projects-list">
+        {projectList &&
+          projectList.map((project, index) => (
+            <div key={index} className="project-item">
+              <div className="project-name">{project.projectname}</div>
+              <div className="project-id">ID: {project.projectid}</div>
+              <div className="project-description">{project.description}</div>
+            </div>
+          ))}
       </div>
 
       {/* Create new project form */}
