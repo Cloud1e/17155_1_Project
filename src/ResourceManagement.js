@@ -206,7 +206,23 @@ const ResourceManagement = () => {
     <div className="resource-management-container">
       <h1>Welcome to Project: {projectInfo.projectname}</h1>
       <p>Login as {username}</p>
-      <p>{JSON.stringify(projectInfo)}</p>
+      {/* <p>{JSON.stringify(projectInfo)}</p> */}
+
+      {/* Render project info in a structured format */}
+      <div className="project-info-container">
+        {projectInfo &&
+          Object.entries(projectInfo).map(([key, value], index) => (
+            <div key={index} className="project-info-detail">
+              <span className="project-info-key">{key}:</span>
+              {Array.isArray(value) ? (
+                <span className="project-info-value">{value.join(", ")}</span>
+              ) : (
+                <span className="project-info-value">{value}</span>
+              )}
+            </div>
+          ))}
+      </div>
+
       <div className="resources-header">
         <div className="header-item">Capacity</div>
         <div className="header-item">Available</div>
@@ -252,7 +268,7 @@ const ResourceManagement = () => {
           className="remove-user-from-project-form"
           onSubmit={handleRemoveUserFromProjectSubmit}
           style={{
-            display: removeUsernameSuccess === "Pending" ? 'none' : '',
+            display: removeUsernameSuccess === "Pending" ? "none" : "",
           }}
         >
           <input
@@ -261,11 +277,13 @@ const ResourceManagement = () => {
             value={removeUsername}
             onChange={(e) => setRemoveUsername(e.target.value)}
           />
-          <button type="submit" id="remove-user-from-project-button">Remove</button>
+          <button type="submit" id="remove-user-from-project-button">
+            Remove
+          </button>
         </form>
         <form
           style={{
-            display: removeUsernameSuccess === "Pending" ? '' : 'none',
+            display: removeUsernameSuccess === "Pending" ? "" : "none",
           }}
           className="remove-user-from-project-final-form"
           onSubmit={handleRemoveUserFromProjectFinalSubmit}

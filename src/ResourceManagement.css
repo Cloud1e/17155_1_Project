@@ -82,3 +82,25 @@
   text-align: center;
   margin-bottom: 20px;
 }
+/* Styling for the Project Info display */
+.project-info-container {
+  background-color: #e9ecef; /* Light grey background for the container */
+  border-radius: 4px;
+  padding: 15px;
+  margin-top: 10px;
+  color: #333;
+}
+
+/* Individual details of the project info */
+.project-info-detail {
+  margin-bottom: 5px; /* Spacing between details */
+}
+
+/* Key-Value pair styling */
+.project-info-key {
+  font-weight: bold; /* Make keys bold */
+}
+
+.project-info-value {
+  margin-left: 5px; /* Space between key and value */
+}
