@@ -1,0 +1,67 @@
+/* Overall container styling for enter management */
+.enter-management-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Use the full height of the viewport */
+  background-color: #f0f2f5; /* Light grey background for contrast */
+}
+
+/* Styling for both login and create user containers */
+.login-container,
+.create-user-container {
+  margin: 0 20px; /* Add some space between the two forms */
+  padding: 20px;
+  background-color: white; /* White background for the forms */
+  border-radius: 8px; /* Rounded corners for the form containers */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+}
+
+/* Styling for form elements inside both containers */
+.login-form,
+.create-user-form {
+  display: flex;
+  flex-direction: column; /* Stack elements vertically */
+}
+
+/* Styling for headings in both forms */
+.login-form h2,
+.create-user-form h2 {
+  margin-bottom: 20px; /* Add space below the headings */
+  color: #333; /* Dark grey color for text */
+  text-align: center; /* Center align the form titles */
+}
+
+/* Styling for input fields in both forms */
+.login-form input,
+.create-user-form input {
+  margin-bottom: 15px; /* Add space between inputs */
+  padding: 10px; /* Padding inside input fields */
+  border: 1px solid #ccc; /* Light grey border */
+  border-radius: 4px; /* Slightly rounded corners for the input fields */
+  font-size: 16px; /* Increase font size for readability */
+}
+
+/* Placeholder text styling */
+::placeholder {
+  color: #aaa; /* Light grey color for placeholders */
+}
+
+/* Styling for buttons in both forms */
+.login-form button,
+.create-user-form button {
+  padding: 10px 20px; /* Padding inside buttons */
+  background-color: #007bff; /* Bootstrap primary button color */
+  color: white; /* White text color */
+  border: none; /* Remove default border */
+  border-radius: 4px; /* Rounded corners for the buttons */
+  cursor: pointer; /* Change cursor to pointer on hover */
+  font-size: 16px; /* Increase font size for visibility */
+  transition: background-color 0.2s; /* Smooth transition for hover effect */
+}
+
+/* Button hover effect */
+.login-form button:hover,
+.create-user-form button:hover {
+  background-color: #0056b3; /* Darken button color on hover */
+}

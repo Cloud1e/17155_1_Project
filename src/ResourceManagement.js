@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
-// import './ResourceManagement.css'; // You can uncomment and use this if you have a CSS file.
+import './ResourceManagement.css'; // You can uncomment and use this if you have a CSS file.
 
 const ResourceManagement = () => {
   const [projectInfo, setProjectInfo] = useState("");

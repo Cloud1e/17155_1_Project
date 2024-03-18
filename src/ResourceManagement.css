@@ -1,0 +1,84 @@
+/* Container for the entire resource management section */
+.resource-management-container {
+  padding: 20px;
+  background-color: #f0f2f5; /* Light grey background for contrast */
+}
+
+/* Header for the resources table, similar to a table header */
+.resources-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding: 10px;
+  background-color: #ddd; /* Slightly darker grey for headers */
+  border-radius: 4px;
+}
+
+.header-item {
+  flex: 1;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* Individual resource items, representing rows in the table */
+.resource-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+  padding: 10px;
+  background-color: white;
+  border-radius: 4px;
+}
+
+.resource-capacity,
+.resource-available,
+.resource-actions {
+  flex: 1;
+  text-align: center;
+}
+
+.resource-request-input {
+  flex: 1;
+  margin: 0 10px; /* Space between input and adjacent elements */
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Button styles for actions */
+.resource-actions button {
+  margin: 0 5px;
+  padding: 5px 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.resource-actions button:hover {
+  background-color: #0056b3;
+}
+
+/* User management forms, similar to login forms */
+.add-user-to-project-container,
+.remove-user-from-project-container {
+  margin-top: 20px;
+}
+
+.add-user-to-project-form,
+.remove-user-from-project-form,
+.remove-user-from-project-final-form {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.add-user-to-project-form h2,
+.remove-user-from-project-form h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
