@@ -1,38 +1,73 @@
-import React, { useState } from "react";
-// import './UserManagementForm.css'; // You can uncomment and use this if you have a CSS file.
+import React, { useEffect, useState } from "react";
+import { useNavigate, useLocation } from 'react-router-dom';
+// import './UserManagement.css'; // You can uncomment and use this if you have a CSS file.
 
-// UserManagementForm component for sign-in, creating new users, and handling projects.
-const UserManagementForm = ({
-  onSignIn,
-  onCreateUser,
-  onCreateProject,
-  onUseExistingProject,
-}) => {
+// UserManagement component for handling projects.
+const UserManagement = () => {
   // State variables for form fields.
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [newUsername, setNewUsername] = useState("");
-  const [newPassword, setNewPassword] = useState("");
   const [projectName, setProjectName] = useState("");
+  const [projectId, setProjectId] = useState("");
   const [projectDescription, setProjectDescription] = useState("");
+
   const [existingProjectId, setExistingProjectId] = useState("");
 
-  // Handle sign-in form submission.
-  const handleSignInSubmit = (event) => {
-    event.preventDefault();
-    onSignIn(username, password);
+  const [projectList, setProjectList] = useState("");
+
+  const navigate = useNavigate();
+  const location = useLocation();
+  const username = location.state.username;
+  const userId = location.state.id;
+
+  const onCreateProject = async (projectName, projectId, projectDescription) => {
+    const requestOptions = {
+      method: "GET"
+    }
+    await fetch("/project/create/", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      // mode: "cors",
+      body: JSON.stringify({'projectname': projectName,
+        'projectid': projectId,
+        'description': projectDescription,
+        'authusers': username})
+    })
+    await fetch("/project/createTry/", requestOptions)
+    .then(response => response.json())
+    .then(data =>  {
+      if (data.message.includes("Success!")) {
+        const projectid = data.projectid;
+        navigate('/project/' + projectid, {state: {"id": userId, "username": username, "projectid": projectid}});
+      } else {
+        alert(data.message);
+      }
+    })
   };
 
-  // Handle create new user form submission.
-  const handleCreateUserSubmit = (event) => {
-    event.preventDefault();
-    onCreateUser(newUsername, newPassword);
+  const onUseExistingProject = async (existingProjectId) => {
+    const requestOptions = {
+      method: "GET"
+    }
+    await fetch("/project/get/", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      // mode: "cors",
+      body: JSON.stringify({'projectid': existingProjectId})
+    })
+    await fetch("/project/getTry/", requestOptions)
+    .then(response => response.json())
+    .then(data =>  {
+      if (data.message.includes("Success!")) {
+        navigate('/project/' + existingProjectId, {state: {"id": userId, "username": username, "projectid": existingProjectId}});
+      } else {
+        alert(data.message);
+      }
+    })
   };
 
   // Handle create new project form submission.
   const handleCreateProjectSubmit = (event) => {
     event.preventDefault();
-    onCreateProject(projectName, projectDescription);
+    onCreateProject(projectName, projectId, projectDescription);
   };
 
   // Handle use existing project form submission.
@@ -41,50 +76,25 @@ const UserManagementForm = ({
     onUseExistingProject(existingProjectId);
   };
 
+  const getAllProjects = () => {
+    const requestOptions = {
+      method: "GET"
+    };
+    fetch("/project/getAll/", requestOptions)
+    .then(response => response.json())
+    .then(data => setProjectList(data.data));
+  }
+
+  useEffect(() => {
+    getAllProjects();
+  }, []);
+
   // Render method for the user management form.
   return (
     <div className="user-management-container">
-      {/* Sign-in form */}
-      <div className="login-container">
-        <form className="login-form" onSubmit={handleSignInSubmit}>
-          <h2>User Sign In</h2>
-          <input
-            type="text"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <button type="submit">Sign In</button>
-        </form>
-      </div>
-
-      {/* Create user form */}
-      <div className="create-user-container">
-        <form className="create-user-form" onSubmit={handleCreateUserSubmit}>
-          <h2>Create New User</h2>
-          <input
-            type="text"
-            placeholder="New Username"
-            value={newUsername}
-            onChange={(e) => setNewUsername(e.target.value)}
-          />
-          <input
-            type="password"
-            placeholder="New Password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-          />
-          <button type="submit">Create User</button>
-        </form>
-      </div>
-
       {/* Use existing project form */}
+      <h1>Welcome, {username}!</h1>
+      <p>Your ID: {userId}</p>
       <div className="use-existing-project-container">
         <form
           className="use-existing-project-form"
@@ -99,6 +109,7 @@ const UserManagementForm = ({
           />
           <button type="submit">Use Project</button>
         </form>
+        <p>Existing Projects: {JSON.stringify(projectList)}</p>
       </div>
 
       {/* Create new project form */}
@@ -114,6 +125,12 @@ const UserManagementForm = ({
             value={projectName}
             onChange={(e) => setProjectName(e.target.value)}
           />
+          <input
+            type="text"
+            placeholder="Project ID"
+            value={projectId}
+            onChange={(e) => setProjectId(e.target.value)}
+          />
           <textarea
             placeholder="Project Description"
             value={projectDescription}
@@ -126,5 +143,5 @@ const UserManagementForm = ({
   );
 };
 
-// Exporting UserManagementForm for use in other components.
-export default UserManagementForm;
+// Exporting UserManagement for use in other components.
+export default UserManagement;

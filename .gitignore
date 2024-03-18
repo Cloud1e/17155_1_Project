@@ -26,3 +26,5 @@ __pycache__/
 *.pyc
 
 app_secret_key.txt
+
+.pytest_cache
