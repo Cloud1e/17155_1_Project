@@ -263,7 +263,6 @@ const ResourceManagement = () => {
         </form>
       </div>
       <div className="remove-user-from-project-container">
-        <h2>Remove User From Project</h2>
         <form
           className="remove-user-from-project-form"
           onSubmit={handleRemoveUserFromProjectSubmit}
@@ -271,6 +270,7 @@ const ResourceManagement = () => {
             display: removeUsernameSuccess === "Pending" ? "none" : "",
           }}
         >
+          <h2>Remove User From Project</h2>
           <input
             type="text"
             placeholder="Username to remove"
@@ -288,6 +288,7 @@ const ResourceManagement = () => {
           className="remove-user-from-project-final-form"
           onSubmit={handleRemoveUserFromProjectFinalSubmit}
         >
+          <h2>Remove User From Project</h2>
           <button type="submit">Yes</button>
           <button type="submit">No</button>
         </form>
