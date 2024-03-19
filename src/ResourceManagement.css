@@ -78,7 +78,8 @@
 }
 
 .add-user-to-project-form h2,
-.remove-user-from-project-form h2 {
+.remove-user-from-project-form h2,
+.remove-user-from-project-final-form h2 {
   text-align: center;
   margin-bottom: 20px;
 }
