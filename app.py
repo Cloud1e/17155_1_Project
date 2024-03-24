@@ -123,6 +123,12 @@ def enter_success(code):
         message = 'Success!'
         return jsonify({'message': message, 'id': session['_id'], 'username': username}), code
 
+@app.route('/logout/', methods=["POST"])
+def logout():
+    session.pop('username', None)
+    session.pop('encrypted_pass', None)
+    return redirect(url_for('login'))
+
 @app.route('/project/<projectid>', methods=['GET'])
 def project_detail(projectid):
     project_found = projects.find_one({"projectid": projectid})
