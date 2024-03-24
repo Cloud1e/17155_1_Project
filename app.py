@@ -127,7 +127,7 @@ def enter_success(code):
 def logout():
     session.pop('username', None)
     session.pop('encrypted_pass', None)
-    return redirect(url_for('login'))
+    return redirect(url_for('home'))
 
 @app.route('/project/<projectid>', methods=['GET'])
 def project_detail(projectid):
