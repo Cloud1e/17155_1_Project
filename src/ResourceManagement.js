@@ -60,17 +60,40 @@ const ResourceManagement = () => {
   };
 
   // Checkin resources
-  const handleCheckin = (set) => {
+  const handleCheckin = async (set) => {
     const checkedOut = resources[set].capacity - resources[set].available;
-    if (resources[set].request <= 0 || resources[set].request > checkedOut) {
+    if (resources[set].request <= 0) {
+      alert("Please enter a positive integer.");
+      return;
+    }
+    if (resources[set].request > checkedOut) {
       alert("Cannot check in more resources than were checked out.");
       return;
     }
+    let hardwarename = ""
+    if (set === "HWSet1") {
+      hardwarename = "HW Set1"
+    } else if (set === "HWSet2") {
+      hardwarename = "HW Set2"
+    }
+    const requestOptions = {
+      method: "GET"
+    }
+    await fetch("/hwsets/checkIn/", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      // mode: "cors",
+      body: JSON.stringify({'hardwarename': hardwarename, 'quantity': resources[set].request})
+    })
+    await fetch("/hwsets/checkInTry/", requestOptions)
+    .then(response => response.json())
+    .then(data => {
+      getResources();
+    })
     setResources({
       ...resources,
       [set]: {
         ...resources[set],
-        available: resources[set].available + resources[set].request,
         // Reset request to 0 after checkin
         request: 0,
       },
