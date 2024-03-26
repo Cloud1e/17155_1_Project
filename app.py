@@ -214,6 +214,34 @@ def getProjectTry():
     }
     return jsonify(data), 200
 
+@app.route("/project/join/", methods=["POST"])
+def joinProject():
+    json = request.get_json()
+    session['projectid'] = json["projectid"]
+    return '1'
+
+@app.route("/project/joinTry/", methods=["GET"])
+def joinProjectTry():
+    projectid = session['projectid']
+    username = session['username']
+    project_found = projects.find_one({"projectid": projectid})
+    if project_found is None:
+        return jsonify({'message': "Project Does Not Exist!"}), 400
+    elif username in project_found["authusers"]:
+        return jsonify({'message': "You have joined the project!"}), 400
+    authusers = [i for i in project_found["authusers"]]
+    authusers.append(username)
+    result = projects.update_one({"projectid": projectid}, 
+                                 {"$set": {"authusers": authusers}})
+    data = {
+        "message": 'Success!',
+        "projectname": project_found["projectname"],
+        "projectid": project_found["projectid"],
+        "description": project_found["description"],
+        "authusers": project_found["authusers"],
+    }
+    return jsonify(data), 200
+
 @app.route("/project/getInfo/", methods=["POST"])
 def getProjectInfo():
     json = request.get_json()
@@ -234,14 +262,14 @@ def getProjectInfoTry():
     return jsonify(data), 200
 
 @app.route("/project/addUser/", methods=["POST"])
-def joinProject():
+def addUserToProject():
     json = request.get_json()
     session['projectid'] = json["projectid"]
     session['addUserName'] = json["addUsername"]
     return '1'
 
 @app.route("/project/addUserTry/", methods=["GET"])
-def joinProjectTry():
+def addUserToProjectTry():
     projectId = session['projectid']
     add_username = session['addUserName']
     project_found = projects.find_one({"projectid": projectId})

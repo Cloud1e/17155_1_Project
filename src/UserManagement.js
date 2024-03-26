@@ -9,7 +9,8 @@ const UserManagement = () => {
   const [projectId, setProjectId] = useState("");
   const [projectDescription, setProjectDescription] = useState("");
 
-  const [existingProjectId, setExistingProjectId] = useState("");
+  const [existingProjectIdToUse, setExistingProjectIdToUse] = useState("");
+  const [existingProjectIdToJoin, setExistingProjectIdToJoin] = useState("");
 
   const [projectList, setProjectList] = useState("");
 
@@ -50,7 +51,7 @@ const UserManagement = () => {
     })
   };
 
-  const onUseExistingProject = async (existingProjectId) => {
+  const onUseExistingProject = async (existingProjectIdToUse) => {
     const requestOptions = {
       method: "GET"
     }
@@ -58,13 +59,34 @@ const UserManagement = () => {
       method: "POST",
       headers: {"Content-Type": "application/json"},
       // mode: "cors",
-      body: JSON.stringify({'projectid': existingProjectId})
+      body: JSON.stringify({'projectid': existingProjectIdToUse})
     })
     await fetch("/project/getTry/", requestOptions)
     .then(response => response.json())
     .then(data =>  {
       if (data.message.includes("Success!")) {
-        navigate('/project/' + existingProjectId, {state: {"id": userId, "username": username, "projectid": existingProjectId}});
+        navigate('/project/' + existingProjectIdToUse, {state: {"id": userId, "username": username, "projectid": existingProjectIdToUse}});
+      } else {
+        alert(data.message);
+      }
+    })
+  };
+
+  const onJoinExistingProject = async (existingProjectIdToJoin) => {
+    const requestOptions = {
+      method: "GET"
+    }
+    await fetch("/project/join/", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      // mode: "cors",
+      body: JSON.stringify({'projectid': existingProjectIdToJoin})
+    })
+    await fetch("/project/joinTry/", requestOptions)
+    .then(response => response.json())
+    .then(data =>  {
+      if (data.message.includes("Success!")) {
+        navigate('/project/' + existingProjectIdToJoin, {state: {"id": userId, "username": username, "projectid": existingProjectIdToJoin}});
       } else {
         alert(data.message);
       }
@@ -86,7 +108,13 @@ const UserManagement = () => {
   // Handle use existing project form submission.
   const handleUseExistingProjectSubmit = (event) => {
     event.preventDefault();
-    onUseExistingProject(existingProjectId);
+    onUseExistingProject(existingProjectIdToUse);
+  };
+
+  // Handle join existing project form submission.
+  const handleJoinExistingProjectSubmit = (event) => {
+    event.preventDefault();
+    onJoinExistingProject(existingProjectIdToJoin);
   };
 
   const getAllProjects = () => {
@@ -127,10 +155,27 @@ const UserManagement = () => {
           <input
             type="text"
             placeholder="Existing Project ID"
-            value={existingProjectId}
-            onChange={(e) => setExistingProjectId(e.target.value)}
+            value={existingProjectIdToUse}
+            onChange={(e) => setExistingProjectIdToUse(e.target.value)}
           />
           <button type="submit">Use Project</button>
+        </form>
+        {/* <p>Existing Projects: {JSON.stringify(projectList)}</p> */}
+      </div>
+
+      <div className="join-existing-project-container">
+        <form
+          className="join-existing-project-form"
+          onSubmit={handleJoinExistingProjectSubmit}
+        >
+          <h2>Join Existing Project</h2>
+          <input
+            type="text"
+            placeholder="Existing Project ID"
+            value={existingProjectIdToJoin}
+            onChange={(e) => setExistingProjectIdToJoin(e.target.value)}
+          />
+          <button type="submit">Join Project</button>
         </form>
         {/* <p>Existing Projects: {JSON.stringify(projectList)}</p> */}
       </div>
@@ -143,6 +188,7 @@ const UserManagement = () => {
               <div className="project-name">{project.projectname}</div>
               <div className="project-id">ID: {project.projectid}</div>
               <div className="project-description">{project.description}</div>
+              <div className="project-joined-or-not">Joined: {JSON.parse(JSON.stringify(project.authusers)).includes(username).toString()}</div>
             </div>
           ))}
       </div>

@@ -35,7 +35,7 @@ class ProjectTest(unittest.TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertIn("project2", response.json['projectname'])
         
-    def test_joinProject(self):
+    def test_addUserToProject(self):
         projectID = "2"
         userName = "user1"
         response = self.client.post('/project/addUser', 
