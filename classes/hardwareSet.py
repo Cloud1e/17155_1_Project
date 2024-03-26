@@ -29,6 +29,5 @@ class hardwareSet:
             self.__availability += qty
             return 0  # success
         else:
-            self.__availability = self.__capacity
             return -1  
  

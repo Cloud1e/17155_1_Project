@@ -368,16 +368,22 @@ def checkOut():
         availability = -1
         return str(availability)
 
-@app.route("/hwsets/checkIn", methods=["POST"])
+@app.route("/hwsets/checkIn/", methods=["POST"])
 def checkIn():
     json = request.get_json()
-    name = json["hardwarename"]
+    session["hardwarename"] = json["hardwarename"]
+    session["quantity"] = json["quantity"]
+    return '1'
+    
+@app.route("/hwsets/checkInTry/", methods=["GET"])
+def checkInTry():
+    name = session["hardwarename"]
     hw_found = hwsets.find_one({"hardwarename": name})
     if hw_found:
         capacity = hw_found["capacity"]
         availability = hw_found["availability"]
         hw = hardwareSet(capacity, availability)
-        num = int(json["quantity"])
+        num = int(session["quantity"])
         hw.check_in(num)
         availability = hw.get_availability()
         query = {"hardwarename": name}
