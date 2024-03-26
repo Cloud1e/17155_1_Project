@@ -18,6 +18,13 @@ const ResourceManagement = () => {
   const userId = location.state.id;
   const projectid = location.state.projectid;
 
+  const onLogout = async () => {
+    await fetch("/logout/", {
+      method: "POST"
+    })
+    navigate('/')
+  };
+
   // Update the request amount in the state
   const handleRequestChange = (set, value) => {
     const intValue = parseInt(value, 10) || 0;
@@ -183,6 +190,12 @@ const ResourceManagement = () => {
     getResources();
   }, []);
 
+  // Handle log out.
+  const handleLogoutSubmit = (event) => {
+    event.preventDefault();
+    onLogout();
+  };
+
   // Handle adding user to project
   const handleAddUserToProjectSubmit = (event) => {
     event.preventDefault();
@@ -207,6 +220,15 @@ const ResourceManagement = () => {
       <h1>Welcome to Project: {projectInfo.projectname}</h1>
       <p>Login as {username}</p>
       {/* <p>{JSON.stringify(projectInfo)}</p> */}
+
+      <div className="logout-container">
+        <form
+          className="logout-form"
+          onSubmit={handleLogoutSubmit}
+        >
+          <button type="submit">Log out</button>
+        </form>
+      </div>
 
       {/* Render project info in a structured format */}
       <div className="project-info-container">

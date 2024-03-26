@@ -18,6 +18,13 @@ const UserManagement = () => {
   const username = location.state.username;
   const userId = location.state.id;
 
+  const onLogout = async () => {
+    await fetch("/logout/", {
+      method: "POST"
+    })
+    navigate('/')
+  };
+
   const onCreateProject = async (projectName, projectId, projectDescription) => {
     const requestOptions = {
       method: "GET"
@@ -64,6 +71,12 @@ const UserManagement = () => {
     })
   };
 
+  // Handle log out.
+  const handleLogoutSubmit = (event) => {
+    event.preventDefault();
+    onLogout();
+  };
+
   // Handle create new project form submission.
   const handleCreateProjectSubmit = (event) => {
     event.preventDefault();
@@ -95,6 +108,16 @@ const UserManagement = () => {
       {/* Use existing project form */}
       <h1>Welcome, {username}!</h1>
       <p>Your ID: {userId}</p>
+
+      <div className="logout-container">
+        <form
+          className="logout-form"
+          onSubmit={handleLogoutSubmit}
+        >
+          <button type="submit">Log out</button>
+        </form>
+      </div>
+
       <div className="use-existing-project-container">
         <form
           className="use-existing-project-form"
