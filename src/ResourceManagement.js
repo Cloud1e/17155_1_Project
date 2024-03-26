@@ -39,31 +39,50 @@ const ResourceManagement = () => {
   };
 
   // Checkout resources
-  const handleCheckout = (set) => {
+  const handleCheckout = async (set) => {
     if (resources[set].request <= 0) {
       alert("Please enter a valid request amount.");
       return;
     }
-    if (resources[set].available >= resources[set].request) {
-      setResources({
-        ...resources,
-        [set]: {
-          ...resources[set],
-          available: resources[set].available - resources[set].request,
-          // Reset request to 0 after checkout
-          request: 0,
-        },
-      });
-    } else {
+    if (resources[set].available < resources[set].request) {
       alert("Not enough resources available to fulfill the request.");
+      return;
     }
+    let hardwarename = ""
+    if (set === "HWSet1") {
+      hardwarename = "HW Set1"
+    } else if (set === "HWSet2") {
+      hardwarename = "HW Set2"
+    }
+    const requestOptions = {
+      method: "GET"
+    }
+    await fetch("/hwsets/checkOut/", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      // mode: "cors",
+      body: JSON.stringify({'hardwarename': hardwarename, 'quantity': resources[set].request})
+    })
+    await fetch("/hwsets/checkOutTry/", requestOptions)
+    .then(response => response.json())
+    .then(data => {
+      getResources();
+    })
+    setResources({
+      ...resources,
+      [set]: {
+        ...resources[set],
+        // Reset request to 0 after checkout
+        request: 0,
+      },
+    });
   };
 
   // Checkin resources
   const handleCheckin = async (set) => {
     const checkedOut = resources[set].capacity - resources[set].available;
     if (resources[set].request <= 0) {
-      alert("Please enter a positive integer.");
+      alert("Please enter a valid request amount.");
       return;
     }
     if (resources[set].request > checkedOut) {

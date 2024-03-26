@@ -348,16 +348,22 @@ def getAllHw():
         del hwset['_id']
     return jsonify({'data': documents}), 200
 
-@app.route("/hwsets/checkOut", methods=["POST"])
+@app.route("/hwsets/checkOut/", methods=["POST"])
 def checkOut():
     json = request.get_json()
-    name = json["hardwarename"]
+    session["hardwarename"] = json["hardwarename"]
+    session["quantity"] = json["quantity"]
+    return '1'
+    
+@app.route("/hwsets/checkOutTry/", methods=["GET"])
+def checkOutTry():
+    name = session["hardwarename"]
     hw_found = hwsets.find_one({"hardwarename": name})
     if hw_found:
         capacity = hw_found["capacity"]
         availability = hw_found["availability"]
         hw = hardwareSet(capacity, availability)
-        num = int(json["quantity"])
+        num = int(session["quantity"])
         hw.check_out(num)
         availability = hw.get_availability()
         query = {"hardwarename":name}
