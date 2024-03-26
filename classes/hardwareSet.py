@@ -21,7 +21,6 @@ class hardwareSet:
             self.__availability -= qty
             return 0  # success
         else:
-            self.__availability = 0
             return -1  
         
     def check_in(self, qty):
