@@ -12,6 +12,7 @@
 
 /* Form styles for both creating and using existing projects */
 .use-existing-project-form,
+.join-existing-project-form,
 .create-project-form {
   display: flex;
   flex-direction: column;
@@ -19,15 +20,18 @@
   background-color: white;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
 }
 
 .use-existing-project-form h2,
+.join-existing-project-form h2,
 .create-project-form h2 {
   text-align: center;
   margin-bottom: 20px;
 }
 
 .use-existing-project-form input,
+.join-existing-project-form input,
 .create-project-form input,
 .create-project-form textarea {
   margin-bottom: 15px;
@@ -42,7 +46,9 @@
   resize: vertical; /* Allows resizing only vertically */
 }
 
+.logout-form button,
 .use-existing-project-form button,
+.join-existing-project-form button,
 .create-project-form button {
   padding: 10px 20px;
   background-color: #007bff;
@@ -83,7 +89,8 @@
 
 /* Project ID and Description Styling */
 .project-id,
-.project-description {
+.project-description,
+.project-joined-or-not {
   color: #555;
   font-size: 0.9em;
   margin-bottom: 2px;
