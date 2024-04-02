@@ -264,10 +264,7 @@ const ResourceManagement = () => {
       {/* <p>{JSON.stringify(projectInfo)}</p> */}
 
       <div className="logout-container">
-        <form
-          className="logout-form"
-          onSubmit={handleLogoutSubmit}
-        >
+        <form className="logout-form" onSubmit={handleLogoutSubmit}>
           <button type="submit">Log out</button>
         </form>
       </div>
@@ -288,6 +285,7 @@ const ResourceManagement = () => {
       </div>
 
       <div className="resources-header">
+        <div className="header-item">Resource Name</div>
         <div className="header-item">Capacity</div>
         <div className="header-item">Available</div>
         <div className="header-item">Request</div>
@@ -295,6 +293,7 @@ const ResourceManagement = () => {
       </div>
       {Object.keys(resources).map((set) => (
         <div key={set} className="resource-item">
+          <div className="resource-name">{set}</div>
           <div className="resource-capacity">{resources[set].capacity}</div>
           <div className="resource-available">{resources[set].available}</div>
           <input
