@@ -40,6 +40,7 @@
   border-radius: 4px;
 }
 
+.resource-name,
 .resource-capacity,
 .resource-available,
 .resource-actions {
@@ -76,6 +77,19 @@
   margin-top: 20px;
 }
 
+.add-user-to-project-form button,
+.remove-user-from-project-form button,
+.remove-user-from-project-final-form button {
+  margin: 10px auto 0; 
+  padding: 5px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 10%;
+}
+
 .add-user-to-project-form,
 .remove-user-from-project-form,
 .remove-user-from-project-final-form {
@@ -85,6 +99,7 @@
   background-color: white;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  align-items: center;
 }
 
 .add-user-to-project-form h2,
