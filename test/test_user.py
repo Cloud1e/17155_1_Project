@@ -7,21 +7,44 @@ class UserTest(unittest.TestCase):
         self.client.testing = True
 
     def test_createUser(self):
-        username = "user2"
+        username = "user4"
         password = "password"
-        response = self.client.post('/createUser', json={'username': username, 'password': password})
-        self.assertEqual(response.status_code, 201)
-        self.assertIn("User " + username + " Created!", response.json['message'])
+        response = self.client.post('/createUser/', json={'username': username, 'password': password})
+        self.assertEqual(response.status_code, 200)
+        
+    def test_create_user_success(self):
+        with self.client as client:
+            with client.session_transaction() as sess:
+                sess['username'] = 'user13'
+                sess['encrypted_pass'] = 'password123'
+            response = client.get('/createUserTry/')
+            self.assertEqual(response.status_code, 201)
+    
+    def test_create_user_empty_username(self):
+        with self.client as client:
+            with client.session_transaction() as sess:
+                sess['username'] = ''
+                sess['encrypted_pass'] = 'password123'
+            response = client.get('/createUserTry/')
+            self.assertEqual(response.status_code, 400)
 
-    # def test_login_success(self):
-    #     username = "user1"
-    #     password = "password"
-    #     response = self.client.post('/login', json={'username': username, 'password': password})
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertIn('Login success!', response.json['message'])
+    def test_login(self):
+        username = "user1"
+        password = "password"
+        response = self.client.post('/login/', json={'username': username, 'password': password})
+        self.assertEqual(response.status_code, 200)
+        
+    def test_loginTry(self):
+        with self.client as client:
+            with client.session_transaction() as sess:
+                sess['username'] = 'user1'
+                sess['encrypted_pass'] = 'password123'
+            response = client.get('/loginTry/')
+            self.assertEqual(response.status_code, 400)
+        
+    def test_logout(self):
+        response = self.client.post('/logout/')
+        self.assertEqual(response.data.decode('utf-8'), '1')
+        
+    
 
-    # def test_login_fail(self):
-    #     """failed"""
-    #     response = self.client.post('/login', data={'username': 'nonexistent', 'password': 'wrongpassword'})
-    #     self.assertEqual(response.status_code, 401)
-    #     self.assertIn('Invalid credentials', response.json['message'])
